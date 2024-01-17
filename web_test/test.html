@@ -1,0 +1,277 @@
+<html>
+  <head>
+    <title>Territory Scoring Test</title>
+    <script type="module" src="../javascript/goscorer.js"></script>
+    <script type="module" src="../javascript/test_goscorer.js"></script>
+    <script type="text/javascript" src="./wgo/wgo.min.js"></script>
+    <script type="text/javascript" src="./wgo/wgo.player.min.js"></script>
+    <link type="text/css" href="./wgo/wgo.player.css" rel="stylesheet" />
+    <link type="text/css" href="./test.css" rel="stylesheet" />
+
+    <script type="module">
+      import { EMPTY, BLACK, WHITE, finalTerritoryScore, territoryScoring, string2d } from "../javascript/goscorer.js";
+
+      var markedDead = Array.from({length: 19}, () => Array.from({length: 19}, () => false));
+
+      window.addEventListener("load", function() {
+          let gamePlayer = document.getElementById("board");
+
+          let layout = {
+              top: ["InfoBox","Control"]
+          };
+
+          let dynamicLayout = [
+              {
+                  conditions: {
+                      minWidth: 650,
+                  },
+                  layout: layout,
+                  className: "wgo-large",
+              },
+              {
+                  conditions: {
+                      minWidth: 550,
+                      minHeight: 600,
+                  },
+                  layout: layout,
+                  className: "wgo-medium"
+              },
+              {
+                  conditions: {
+                      minWidth: 350,
+                  },
+                  layout: layout,
+                  className: "wgo-small"
+              },
+              {
+                  layout: layout,
+                  className: "wgo-xsmall",
+              },
+          ];
+
+          let player = new WGo.BasicPlayer(gamePlayer, {
+              board: { background: "#E8CF6D" },
+              layout: dynamicLayout,
+              allowIllegalMoves: true,
+          });
+          player.setCoordinates(true);
+          player.loadSgf("(;GM[1]FF[4]SZ[19]BN[Black]WN[White]KM[6.5])");
+          player.kifuReader.game.allow_rewrite = false;
+          markedDead = Array.from({length: 19}, () => Array.from({length: 19}, () => false));
+
+          const sgfFileChooser = document.getElementById('sgfFileChooser');
+          sgfFileChooser.addEventListener('change', () => {
+              const file = sgfFileChooser.files[0];
+              if(!file)
+                  return;
+              const reader = new FileReader();
+              reader.onload = (e) => {
+                  const contents = e.target.result;
+                  player.loadSgf(contents);
+                  player.kifuReader.game.allow_rewrite = false;
+                  markedDead = Array.from({length: player.kifuReader.game.sizey}, () => Array.from({length: player.kifuReader.game.sizex}, () => false));
+              };
+              reader.readAsText(file);
+          });
+
+          let recursiveMarkDead = function(x,y,c,b) {
+              if(!player.kifuReader.game.isOnBoard(x,y))
+                  return;
+              if(markedDead[y][x] == b)
+                  return;
+              if(player.kifuReader.game.getStone(x,y) != c)
+                  return;
+              markedDead[y][x] = b;
+              recursiveMarkDead(x-1,y,c,b);
+              recursiveMarkDead(x+1,y,c,b);
+              recursiveMarkDead(x,y-1,c,b);
+              recursiveMarkDead(x,y+1,c,b);
+          };
+          let updateMarkDead = function() {
+              let sizey = player.kifuReader.game.sizey;
+              let sizex = player.kifuReader.game.sizex;
+              for(let y = 0; y<sizey; y++) {
+                  for(let x = 0; x<sizex; x++) {
+                      let c = player.kifuReader.game.getStone(x,y);
+                      if(c == 0)
+                          markedDead[y][x] = false;
+                      else {
+                          if(markedDead[y][x]) {
+                              recursiveMarkDead(x-1,y,c,true);
+                              recursiveMarkDead(x+1,y,c,true);
+                              recursiveMarkDead(x,y-1,c,true);
+                              recursiveMarkDead(x,y+1,c,true);
+                          }
+                      }
+                  }
+              }
+              player.board.redraw();
+          };
+
+          // Remove existing click listeners on board
+          let existingClickListeners = [];
+          for(let listener of player.board.listeners) {
+              if(listener.type == "click")
+                  existingClickListeners.push(listener);
+          }
+          for(let listener of existingClickListeners) {
+              player.board.removeEventListener(listener.type,listener.callback);
+          }
+
+          player.addEventListener("update", updateMarkDead);
+
+          player.board.addEventListener("click", function(x, y) {
+              if(!player.kifuReader || !player.kifuReader.node)
+                  return false;
+              let moveAlreadyExists = false;
+              for(let i in player.kifuReader.node.children) {
+                  if(player.kifuReader.node.children[i].move &&
+                     player.kifuReader.node.children[i].move.x == x &&
+                     player.kifuReader.node.children[i].move.y == y) {
+                      player.next(i);
+                      return;
+                  }
+              }
+              if(!moveAlreadyExists) {
+                  let c = WGo.B;
+                  if(player.kifuReader.node.move && player.kifuReader.node.move.c == WGo.B) {
+                      c = WGo.W;
+                  }
+
+                  if(player.kifuReader.game.isValid(x,y,c)) {
+                      player.kifuReader.node.appendChild(new WGo.KNode({move:{x:x,y:y,c:c}}));
+                      player.next(player.kifuReader.node.children.length-1);
+                  }
+                  else if(player.kifuReader.game.isOnBoard(x,y) && player.kifuReader.game.getStone(x,y) != 0) {
+                      recursiveMarkDead(x,y,player.kifuReader.game.getStone(x,y),!markedDead[y][x]);
+                      player.board.redraw();
+                  }
+              }
+          });
+
+          let DeadStoneLayer = WGo.extendClass(WGo.Board.CanvasLayer, function() {
+              this.super.call(this);
+          });
+
+          DeadStoneLayer.prototype.draw = function(board) {
+              let sizey = board.sizey;
+              let sizex = board.sizex;
+              if(!(markedDead && markedDead.length == sizey && markedDead.length > 0 && markedDead[0].length == sizex))
+                  return;
+              for(let y = 0; y<sizey; y++) {
+                  for(let x = 0; x<sizex; x++) {
+                      if(!markedDead[y][x])
+                          continue;
+
+                      //Get pixel coordinates
+                      let xp = board.getX(x);
+                      let yp = board.getY(y);
+                      let sr = board.stoneRadius;
+
+                      //If there is a black stone or white stone change color a bit
+                      let c = player.kifuReader.game.getStone(x,y);
+                      if(c == WGo.B) this.context.strokeStyle = "#F88";
+                      else this.context.strokeStyle = "#900";
+
+                      this.context.lineWidth = 6;
+                      this.context.beginPath();
+                      this.context.moveTo(xp + sr*0.8, yp + sr*0.8);
+                      this.context.lineTo(xp - sr*0.8, yp - sr*0.8);
+                      this.context.moveTo(xp - sr*0.8, yp + sr*0.8);
+                      this.context.lineTo(xp + sr*0.8, yp - sr*0.8);
+                      this.context.stroke();
+                  }
+              }
+          };
+          player.board.addLayer(new DeadStoneLayer(),400);
+
+          let TerritoryLayer = WGo.extendClass(WGo.Board.CanvasLayer, function() {
+              this.super.call(this);
+          });
+          TerritoryLayer.prototype.draw = function(board) {
+              let sizey = board.sizey;
+              let sizex = board.sizex;
+              if(!(markedDead && markedDead.length == sizey && markedDead.length > 0 && markedDead[0].length == sizex))
+                  return;
+              let stones = Array.from(
+                  {length: sizey}, (_,y) =>
+                      Array.from(
+                          {length: sizex}, (_,x) =>
+                              player.kifuReader.game.getStone(x,y) == WGo.B ? BLACK :
+                              player.kifuReader.game.getStone(x,y) == WGo.W ? WHITE :
+                              EMPTY
+                      )
+              );
+              let scoring = territoryScoring(stones,markedDead);
+
+              let blackScoreFromTerritory = 0;
+              let whiteScoreFromTerritory = 0;
+              let blackScoreFromDeadStones = 0;
+              let whiteScoreFromDeadStones = 0;
+              for(let y = 0; y<sizey; y++) {
+                  for(let x = 0; x<sizex; x++) {
+                      if(scoring[y][x].isTerritoryFor == BLACK)
+                          blackScoreFromTerritory += 1;
+                      else if(scoring[y][x].isTerritoryFor == WHITE)
+                          whiteScoreFromTerritory += 1;
+
+                      if(stones[y][x] == BLACK && markedDead[y][x])
+                          whiteScoreFromDeadStones += 1;
+                      else if(stones[y][x] == WHITE && markedDead[y][x])
+                          blackScoreFromDeadStones += 1;
+
+                      if(scoring[y][x].isTerritoryFor != EMPTY) {
+                          //Get pixel coordinates
+                          let xp = board.getX(x);
+                          let yp = board.getY(y);
+                          let sr = board.stoneRadius;
+                          if(scoring[y][x].isTerritoryFor == BLACK) this.context.fillStyle = "rgba(0,0,0,0.65)";
+                          else this.context.fillStyle = "rgba(255,255,255,0.75)";
+                          this.context.beginPath();
+                          this.context.rect(xp-sr*0.92, yp-sr*0.92, sr*0.92*2, sr*0.92*2);
+                          this.context.fill();
+                      }
+                  }
+              }
+              let blackScoreFromCaptures = player.kifuReader.game.getCaptureCount(WGo.B);
+              let whiteScoreFromCaptures = player.kifuReader.game.getCaptureCount(WGo.W);
+              let komi = ("KM" in player.kifu.info ? Number(player.kifu.info.KM) : 6.5);
+              if(isNaN(komi))
+                  komi = 6.5;
+
+              let blackTotal = blackScoreFromTerritory + blackScoreFromDeadStones + blackScoreFromCaptures;
+              let whiteTotal = whiteScoreFromTerritory + whiteScoreFromDeadStones + whiteScoreFromCaptures + komi;
+
+              const blackScoreSummary = document.getElementById("blackScoreSummary");
+              const whiteScoreSummary = document.getElementById("whiteScoreSummary");
+              blackScoreSummary.textContent =
+                  `Black score: ${blackScoreFromTerritory} (territory) + ${blackScoreFromDeadStones} (dead) + ${blackScoreFromCaptures} (captures) = ${blackTotal}`;
+              whiteScoreSummary.textContent =
+                  `White score: ${whiteScoreFromTerritory} (territory) + ${whiteScoreFromDeadStones} (dead) + ${whiteScoreFromCaptures} (captures) + ${komi} (komi) = ${whiteTotal}`;
+          };
+          player.board.addLayer(new TerritoryLayer(),350);
+          player.board.redraw();
+      });
+
+    </script>
+  </head>
+  <body>
+    <div class="title">
+      Territory Scoring Tester
+    </div>
+    <div class="instructionPane">
+      Click board to play stones. Click on stones to toggle marking as dead/alive.
+    </div>
+    <div class="sgfFileChooserPane">
+      Load SGF File:
+      <input type="file" id="sgfFileChooser" accept=".sgf"></input>
+    </div>
+    <div class="scoreSummaryPane">
+      <span id="blackScoreSummary"></span>
+      <span id="whiteScoreSummary"></span>
+    </div>
+    <div id="board">
+    </div>
+  </body>
+</html>
+

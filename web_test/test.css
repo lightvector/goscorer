@@ -1,0 +1,35 @@
+
+body {
+  display: flex;
+  flex-flow: column;
+}
+
+.title {
+  font-size: x-large;
+  margin: 3px;
+}
+
+.instructionPane {
+  font-size: large;
+  margin: 3px;
+}
+
+.sgfFileChooserPane {
+  font-size: large;
+  margin: 3px;
+}
+
+.scoreSummaryPane {
+  font-size: large;
+  margin: 3px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+#board {
+  margin-top: 6px;
+}
+
+.wgo-player-main {
+  height: calc(100% - 6.5em - 40px);
+}

@@ -1,0 +1,35 @@
+BOARD:
+xoooo...ooxxxxoo.....ooooo
+xxxxoo.oox.w.xxo....ooxxxx
+.w.xxo.oxx..w.xxoo..oxx.w.
+..w.xo.oxxxxxxx..o..oxx...
+TERRITORY:
+xooooaaaooxxxxooaaaaaooooo
+xxxxooaooxzzzxxoaaaaooxxxx
+.w.xxoaoxxzzzzxxooaaoxx.w.
+..w.xoaoxxxxxxx..oaaoxx...
+SEKI:
+x.........................
+xxxx..................xxxx
+zxzxx................xxzxz
+zzxzx................xxzzz
+FALSE EYES:
+xoooo...ooxxxxoo.....ooooo
+xxxxoo.oox.w.xxo....ooxxxx
+.w.xxo.oxx..w.xxoo..oxx.w.
+..w.xo.oxxxxxxx..o..oxx...
+UNSCORABLE FALSE EYES:
+xoooo...ooxxxxoo.....ooooo
+xxxxoo.oox.w.xxo....ooxxxx
+.w.xxo.oxx..w.xxoo..oxx.w.
+..w.xo.oxxxxxxx..o..oxx...
+DAME:
+xoooo...ooxxxxoo.....ooooo
+xxxxoo.oox.w.xxo....ooxxxx
+.w.xxo.oxx..w.xxoo..oxx.w.
+..w.xo.oxxxxxxx11o..oxx...
+EYEVALUE:
+xoooo222ooxxxxoo22222ooooo
+xxxxoo2oox222xxo2222ooxxxx
+111xxo2oxx2222xxoo22oxx111
+1111xo2oxxxxxxx..o22oxx111
