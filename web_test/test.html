@@ -70,6 +70,7 @@
                   player.loadSgf(contents);
                   player.kifuReader.game.allow_rewrite = false;
                   markedDead = Array.from({length: player.kifuReader.game.sizey}, () => Array.from({length: player.kifuReader.game.sizex}, () => false));
+                  player.board.redraw();
               };
               reader.readAsText(file);
           });
