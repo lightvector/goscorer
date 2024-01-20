@@ -1,3 +1,9 @@
+"""
+An attempt at territory scoring in Go with seki detection.
+See https://github.com/lightvector/goscorer
+Original Author: lightvector
+Released under MIT license (https://github.com/lightvector/goscorer/blob/main/LICENSE.txt)
+"""
 
 from typing import List, Dict, Tuple, Set, Optional
 from dataclasses import dataclass
