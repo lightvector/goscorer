@@ -9,7 +9,7 @@ oo.o.o.x.
 bbbbb..o.
 ....b...b
 TERRITORY:
-zzzxxzxzz
+.zzxxzxzz
 wxxx.xzzz
 xoxxoxxzz
 x.ooxoxzz
@@ -39,7 +39,7 @@ oo.o.o.x.
 bbbbb..oF
 ....b...b
 UNSCORABLE FALSE EYES:
-...xx.x..
+F..xx.x..
 Fxxx.x...
 xoxxoxx..
 x.ooxox..

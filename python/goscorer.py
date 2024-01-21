@@ -1175,6 +1175,20 @@ def mark_scoring(
     is_unscorable_false_eye_point: List[List[bool]],
     scoring: List[List[LocScore]],  # mutated by this function
 ):
+    # Also avoid scoring points immediately adjacent to false eye points occupied by single dead opponent throwins.
+    extra_black_unscoreable_points = set()
+    extra_white_unscoreable_points = set()
+    for y in range(ysize):
+        for x in range(xsize):
+            if is_unscorable_false_eye_point[y][x] and stones[y][x] != EMPTY and marked_dead[y][x]:
+                adjacents = [(y-1,x),(y+1,x),(y,x-1),(y,x+1)]
+                if stones[y][x] == WHITE:
+                    for point in adjacents:
+                        extra_black_unscoreable_points.add(point);
+                else:
+                    for point in adjacents:
+                        extra_white_unscoreable_points.add(point);
+
     for y in range(ysize):
         for x in range(xsize):
             s = scoring[y][x]
@@ -1193,6 +1207,11 @@ def mark_scoring(
 
                 if is_unscorable_false_eye_point[y][x]:
                     s.is_unscorable_false_eye = True
+                if (stones[y][x] == EMPTY or marked_dead[y][x]) and (
+                    (color == BLACK and (y,x) in extra_black_unscoreable_points) or
+                    (color == WHITE and (y,x) in extra_white_unscoreable_points)
+                ):
+                    s.is_unscorable_false_eye = True
 
                 s.eye_value = 0
                 if eye_ids[y][x] != -1:
@@ -1201,7 +1220,7 @@ def mark_scoring(
                 if (
                     (stones[y][x] != color or marked_dead[y][x]) and
                     s.belongs_to_seki_group == EMPTY and
-                    (score_false_eyes or not is_unscorable_false_eye_point[y][x]) and
+                    (score_false_eyes or not s.is_unscorable_false_eye) and
                     chain_infos_by_id[chain_ids[y][x]].region_id == region_id and
                     not (color == WHITE and strict_reaches_black[y][x]) and
                     not (color == BLACK and strict_reaches_white[y][x])

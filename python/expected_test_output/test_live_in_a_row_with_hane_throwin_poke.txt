@@ -13,7 +13,7 @@ xxxxoooooxxxoooooxxxxoooooxxxxxoooooxxxxxxooo
 ooooooaaooooooooooo..oo..oooooooaaaoooooooo..
 .....oaaao........o...o.......oaaaaaaao......
 xxxxxoooooxxxxxxxxoooooxxxxxxxoooaaaoooxxxxxx
-...wwx.o.xwzzzzzz.x.o.xww.....x.oaaao.xwzzzzz
+...wwx.o.xwwzzzzz.x.o.xww.....x.oaaao.xwwzzzz
 SEKI:
 zzxxx...xxxzx...xxxzzx...xxxzzzx...xxxzzzzx..
 xxxx.....xxx.....xxxx.....xxxxx.....xxxxxx...
@@ -31,13 +31,13 @@ oooooo..ooooooooooo..oo..ooooooo...oooooooo..
 xxxxxoooooxxxxxxxxoooooxxxxxxxooo...oooxxxxxx
 ...wFx.o.xFw.....Fx.o.xFw....Fx.o...o.xFw....
 UNSCORABLE FALSE EYES:
-..wFx.o.xFwFx.o.xFw.Fx.o.xFw..Fx.o.xFw...Fx.o
+..FFx.o.xFFFx.o.xFF.Fx.o.xFF..Fx.o.xFF...Fx.o
 xxxxoooooxxxoooooxxxxoooooxxxxxoooooxxxxxxooo
 ....o...o...o...o....o...o.....o...o......o..
 oooooo..ooooooooooo..oo..ooooooo...oooooooo..
 .....o...o........o...o.......o.......o......
 xxxxxoooooxxxxxxxxoooooxxxxxxxooo...oooxxxxxx
-...wFx.o.xFw.....Fx.o.xFw....Fx.o...o.xFw....
+...FFx.o.xFF.....Fx.o.xFF....Fx.o...o.xFF....
 DAME:
 ..wwx1o1xww.x1o1xww..x1o1xww...x1o1xww....x1o
 xxxxoooooxxxoooooxxxxoooooxxxxxoooooxxxxxxooo

@@ -47,7 +47,7 @@ Fxxxoo...oxFxxxo.....oxxxx
 ..wxxo...ox...xooooooox...
 ...wxo...ox...Fx.oo.o.x.w.
 UNSCORABLE FALSE EYES:
-...Fx.o...o.x.w.x.o..oxw..
+..FFx.o...o.x.w.x.o..oxw..
 ...xooo...o.x...x.o..oxw..
 xxxxo.....o.xxFxx.o..oxxxF
 xoooo.....ooooxoooo..oooox

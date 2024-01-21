@@ -976,6 +976,18 @@ function printAllTests(stonestr) {
     ...wwx.o.xww......x.o.xww.....x.o...o.xww....
     `;
     printTest(stonestr);
+
+    stonestr = `
+    .wxx.x.xx.x.x.xx..
+    xxoxxoxx.xxxoxxoxx
+    ..o..o.xxxx.o..o..
+    oooooooooooooooooo
+    ooo.oo.o...o..o...
+    ...o..o.xxxo..oxxx
+    xxxoxxoxx.xoxxox.x
+    .wwxx.xx.xxx.xxww.
+    `;
+    printTest(stonestr);
 }
 
 export {

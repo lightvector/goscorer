@@ -1200,6 +1200,24 @@ function markScoring(
     isUnscorableFalseEyePoint,
     scoring // mutated by this function
 ) {
+    const extraBlackUnscoreablePoints = new CoordinateSet();
+    const extraWhiteUnscoreablePoints = new CoordinateSet();
+    for(let y = 0; y < ysize; y++) {
+        for(let x = 0; x < xsize; x++) {
+            if(isUnscorableFalseEyePoint[y][x] && stones[y][x] != EMPTY && markedDead[y][x]) {
+                const adjacents = [[y-1, x], [y+1, x], [y, x-1], [y, x+1]];
+                if(stones[y][x] == WHITE) {
+                    for(const point of adjacents)
+                        extraBlackUnscoreablePoints.add(point);
+                }
+                else {
+                    for(const point of adjacents)
+                        extraWhiteUnscoreablePoints.add(point);
+                }
+            }
+        }
+    }
+
     for(let y = 0; y < ysize; y++) {
         for(let x = 0; x < xsize; x++) {
             const s = scoring[y][x];
@@ -1220,12 +1238,18 @@ function markScoring(
                     s.isFalseEye = true;
                 if(isUnscorableFalseEyePoint[y][x])
                     s.isUnscorableFalseEye = true;
+                if((stones[y][x] == EMPTY || markedDead[y][x]) && (
+                    (color == BLACK && extraBlackUnscoreablePoints.has([y,x])) ||
+                        (color == WHITE && extraWhiteUnscoreablePoints.has([y,x]))
+                )) {
+                    s.isUnscorableFalseEye = true;
+                }
 
                 s.eyeValue = eyeIds[y][x] !== -1 ? eyeInfosById[eyeIds[y][x]].eyeValue : 0;
 
                 if((stones[y][x] !== color || markedDead[y][x]) &&
                    s.belongsToSekiGroup === EMPTY &&
-                   (scoreFalseEyes || !isUnscorableFalseEyePoint[y][x]) &&
+                   (scoreFalseEyes || !s.isUnscorableFalseEye) &&
                    chainInfosById[chainIds[y][x]].regionId === regionId &&
                    !(color === WHITE && strictReachesBlack[y][x]) &&
                    !(color === BLACK && strictReachesWhite[y][x])

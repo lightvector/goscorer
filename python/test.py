@@ -55,7 +55,7 @@ def assert_matches_snapshot(name: str, output: str):
     raise AssertionError(f"Failed test!\nExpected:\n{expected}\nActual:\n{output}")
 
 
-def run_snapshot_test(name: str, stonestr: str):
+def get_output(stonestr: str):
     rows = stonestr.split("\n")
     rows = [row.strip() for row in rows if row.strip() != ""]
     stones,marked_dead = stones_and_marked_dead_of_str(stonestr)
@@ -95,7 +95,10 @@ def run_snapshot_test(name: str, stonestr: str):
     output += string2d2(scoring, rows, lambda s,c: (
         (c if s.eye_value == 0 else "0123456789"[s.eye_value])
     )) + "\n"
+    return output
 
+def run_snapshot_test(name: str, stonestr: str):
+    output = get_output(stonestr)
     assert_matches_snapshot(name, output)
 
 def test_final_scoring():
@@ -983,5 +986,18 @@ def test_live_in_a_row_with_hane_throwin_poke():
     .....o...o........o...o.......o.......o......
     xxxxxoooooxxxxxxxxoooooxxxxxxxooo...oooxxxxxx
     ...wwx.o.xww......x.o.xww.....x.o...o.xww....
+    """
+    run_snapshot_test(inspect.currentframe().f_code.co_name, stonestr)
+
+def test_throwin_false_eye_chains():
+    stonestr = """
+    .wxx.x.xx.x.x.xx..
+    xxoxxoxx.xxxoxxoxx
+    ..o..o.xxxx.o..o..
+    oooooooooooooooooo
+    ooo.oo.o...o..o...
+    ...o..o.xxxo..oxxx
+    xxxoxxoxx.xoxxox.x
+    .wwxx.xx.xxx.xxww.
     """
     run_snapshot_test(inspect.currentframe().f_code.co_name, stonestr)
