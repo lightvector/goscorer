@@ -1,5 +1,5 @@
 
-import { EMPTY, BLACK, WHITE, string2d2, finalTerritoryScore, territoryScoring } from "./goscorer.js";
+import { EMPTY, BLACK, WHITE, string2d2, finalTerritoryScore, finalAreaScore, territoryScoring } from "./goscorer.js";
 
 function stonesAndMarkedDeadOfStr(stonestr) {
     const rows = stonestr.split("\n").map(row => row.trim()).filter(row => row !== "");
@@ -46,6 +46,7 @@ function testFinalScoring() {
         console.assert(finalTerritoryScore(stones,markedDead,0,0,0,true).toString() == { black: 5, white: 4 }.toString());
         console.assert(finalTerritoryScore(stones,markedDead,0,0,3.5,true).toString() == { black: 5, white: 7.5 }.toString());
         console.assert(finalTerritoryScore(stones,markedDead,8,6,3.5,true).toString() == { black: 13, white: 13.5 }.toString());
+        console.assert(finalAreaScore(stones,markedDead,3.5).toString() == { black: 21, white: 25.5 }.toString());
     }
     {
         let stonestr = `
@@ -60,6 +61,7 @@ function testFinalScoring() {
         console.assert(finalTerritoryScore(stones,markedDead,0,0,0,true).toString() == { black: 7, white: 5 }.toString());
         console.assert(finalTerritoryScore(stones,markedDead,0,0,3.5,true).toString() == { black: 7, white: 8.5 }.toString());
         console.assert(finalTerritoryScore(stones,markedDead,8,6,3.5,true).toString() == { black: 15, white: 14.5 }.toString());
+        console.assert(finalAreaScore(stones,markedDead,0).toString() == { black: 21, white: 22.5 }.toString());
     }
     {
         let stonestr = `
@@ -71,6 +73,7 @@ function testFinalScoring() {
     `;
         let { stones,markedDead } = stonesAndMarkedDeadOfStr(stonestr);
         console.assert(finalTerritoryScore(stones,markedDead,0,0,0).toString() == { black: 5, white: 8 }.toString());
+        console.assert(finalAreaScore(stones,markedDead,0).toString() == { black: 19, white: 24 }.toString());
     }
 }
 

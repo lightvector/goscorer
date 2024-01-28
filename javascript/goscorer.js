@@ -71,6 +71,35 @@ function finalTerritoryScore(
 /**
  * @param {color[][]} stones - BLACK or WHITE or EMPTY indicating the stones on the board.
  * @param {bool[][]} markedDead - true if the location has a stone marked as dead, and false otherwise.
+ * @param {float} komi - points to add to white's score due to komi
+ * @return { {black:finalBlackScore,white:finalWhiteScore} }
+ */
+function finalAreaScore(
+    stones,
+    markedDead,
+    komi,
+) {
+    const scoring = areaScoring(stones,markedDead);
+
+    const ysize = stones.length;
+    const xsize = stones[0].length;
+    let finalBlackScore = 0;
+    let finalWhiteScore = 0;
+    for(let y = 0; y<ysize; y++) {
+        for(let x = 0; x<xsize; x++) {
+            if(scoring[y][x] == BLACK)
+                finalBlackScore += 1;
+            else if(scoring[y][x] == WHITE)
+                finalWhiteScore += 1;
+        }
+    }
+    finalWhiteScore += komi;
+    return {black:finalBlackScore,white:finalWhiteScore};
+}
+
+/**
+ * @param {color[][]} stones - BLACK or WHITE or EMPTY indicating the stones on the board.
+ * @param {bool[][]} markedDead - true if the location has a stone marked as dead, and false otherwise.
  * @param {bool} [scoreFalseEyes=false] - defaults to false, if set to true will score territory in false eyes even if
       is_unscorable_false_eye is true.
  * @return {LocScore[][]}
@@ -164,6 +193,53 @@ function territoryScoring(
     );
     return scoring;
 }
+
+/**
+ * @param {color[][]} stones - BLACK or WHITE or EMPTY indicating the stones on the board.
+ * @param {bool[][]} markedDead - true if the location has a stone marked as dead, and false otherwise.
+ * @return {LocScore[][]}
+ */
+function areaScoring(
+    stones,
+    markedDead,
+) {
+    const ysize = stones.length;
+    const xsize = stones[0].length;
+
+    stones.forEach(row => {
+        if(row.length !== xsize)
+            throw new Error(`Not all rows in stones are the same length ${xsize}`);
+        row.forEach(value => {
+            if(value !== EMPTY && value !== BLACK && value !== WHITE)
+                throw new Error("Unexpected value in stones " + value);
+        });
+    });
+
+    if(markedDead.length !== ysize)
+        throw new Error(`markedDead is not the same length as stones ${ysize}`);
+
+    markedDead.forEach(row => {
+        if(row.length !== xsize)
+            throw new Error(`Not all rows in markedDead are the same length as stones ${xsize}`);
+    });
+
+    const strictReachesBlack = makeArray(ysize, xsize, false);
+    const strictReachesWhite = makeArray(ysize, xsize, false);
+    markReachability(ysize, xsize, stones, markedDead, null, strictReachesBlack, strictReachesWhite);
+
+    const scoring = makeArray(ysize, xsize, EMPTY);
+
+    for(let y = 0; y < ysize; y++) {
+        for(let x = 0; x < xsize; x++) {
+            if(strictReachesWhite[y][x] && !strictReachesBlack[y][x])
+                scoring[y][x] = WHITE;
+            if(strictReachesBlack[y][x] && !strictReachesWhite[y][x])
+                scoring[y][x] = BLACK;
+        }
+    }
+    return scoring;
+}
+
 
 function getOpp(pla) {
     return 3 - pla;
@@ -1321,7 +1397,9 @@ export {
     WHITE,
     LocScore,
     finalTerritoryScore,
+    finalAreaScore,
     territoryScoring,
+    areaScoring,
 
     // Other utils
     getOpp,

@@ -2,7 +2,7 @@ import os
 import re
 import inspect
 
-from goscorer import final_territory_score, territory_scoring, string2d, string2d2, EMPTY, BLACK, WHITE
+from goscorer import final_territory_score, final_area_score, territory_scoring, area_scoring, string2d, string2d2, EMPTY, BLACK, WHITE
 
 def stones_and_marked_dead_of_str(stonestr: str):
     rows = stonestr.split("\n")
@@ -114,6 +114,8 @@ def test_final_scoring():
     assert final_territory_score(stones,marked_dead,black_points_from_captures=0,white_points_from_captures=0,komi=0,score_false_eyes=True) == { BLACK: 5, WHITE: 4 }
     assert final_territory_score(stones,marked_dead,black_points_from_captures=0,white_points_from_captures=0,komi=3.5,score_false_eyes=True) == { BLACK: 5, WHITE: 7.5 }
     assert final_territory_score(stones,marked_dead,black_points_from_captures=8,white_points_from_captures=6,komi=3.5,score_false_eyes=True) == { BLACK: 13, WHITE: 13.5 }
+    assert final_area_score(stones,marked_dead,komi=3.5) == { BLACK: 21, WHITE: 25.5 }
+
     stonestr = """
     .xo.oxxo.
     x.o.oxo.o
@@ -126,6 +128,8 @@ def test_final_scoring():
     assert final_territory_score(stones,marked_dead,black_points_from_captures=0,white_points_from_captures=0,komi=0,score_false_eyes=True) == { BLACK: 7, WHITE: 5 }
     assert final_territory_score(stones,marked_dead,black_points_from_captures=0,white_points_from_captures=0,komi=3.5,score_false_eyes=True) == { BLACK: 7, WHITE: 8.5 }
     assert final_territory_score(stones,marked_dead,black_points_from_captures=8,white_points_from_captures=6,komi=3.5,score_false_eyes=True) == { BLACK: 15, WHITE: 14.5 }
+    assert final_area_score(stones,marked_dead,komi=0) == { BLACK: 21, WHITE: 22 }
+
     stonestr = """
     .xo.oxxo.
     x.o.oxo.o
@@ -135,6 +139,7 @@ def test_final_scoring():
     """
     stones,marked_dead = stones_and_marked_dead_of_str(stonestr)
     assert final_territory_score(stones,marked_dead,black_points_from_captures=0,white_points_from_captures=0,komi=0) == { BLACK: 5, WHITE: 8 }
+    assert final_area_score(stones,marked_dead,komi=0) == { BLACK: 19, WHITE: 24 }
 
 def test_empty():
     stonestr = """

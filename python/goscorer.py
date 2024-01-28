@@ -117,6 +117,35 @@ def final_territory_score(
     final_white_score += komi
     return { BLACK: final_black_score, WHITE: final_white_score }
 
+def final_area_score(
+    stones: List[List[Color]],
+    marked_dead: List[List[bool]],
+    komi: float,
+) -> Dict[Color,float]:
+    """Perform area scoring assuming user or AI-supplied life and death markings,
+    and return the final score.
+
+    Parameters:
+    stones[y][x] - BLACK or WHITE or EMPTY indicating the stones on the board.
+    marked_dead[y][x] - True if the location has a stone marked as dead, and False otherwise.
+    komi - the number of points to add to white's score due to playing second.
+
+    Returns a dict { BLACK: final_black_score, WHITE: final_white_score }.
+    """
+    scoring: List[List[Color]] = area_scoring(stones,marked_dead)
+
+    ysize = len(stones)
+    xsize = len(stones[0])
+    final_black_score = 0
+    final_white_score = 0
+    for y in range(ysize):
+        for x in range(xsize):
+            if scoring[y][x] == BLACK:
+                final_black_score += 1
+            elif scoring[y][x] == WHITE:
+                final_white_score += 1
+    final_white_score += komi
+    return { BLACK: final_black_score, WHITE: final_white_score }
 
 def territory_scoring(
     stones: List[List[Color]],
@@ -231,6 +260,50 @@ def territory_scoring(
     mark_scoring(ysize,xsize,stones,marked_dead,score_false_eyes,strict_reaches_black,strict_reaches_white,region_ids,region_infos_by_id,chain_ids,chain_infos_by_id,is_false_eye_point,eye_ids,eye_infos_by_id,is_unscorable_false_eye_point,scoring)
 
     return scoring
+
+
+def area_scoring(
+    stones: List[List[Color]],
+    marked_dead: List[List[bool]],
+) -> List[List[Color]]:
+    """Perform area scoring assuming user or AI-supplied life and death markings,
+    and return the detailed area map.
+
+    Parameters:
+    stones[y][x] - BLACK or WHITE or EMPTY indicating the stones on the board.
+    marked_dead[y][x] - True if the location has a stone marked as dead, and False otherwise.
+
+    Returns an array of Colors that indicate how the points on the board should be scored - which points are who's area."""
+
+    ysize = len(stones)
+    xsize = len(stones[0])
+    for row in stones:
+        if len(row) != xsize:
+            raise ValueError(f"Not all rows in stones are the same length {xsize}")
+        for value in row:
+            if value != EMPTY and value != BLACK and value != WHITE:
+                raise ValueError(f"Unexpected value in stones {value}")
+    if len(marked_dead) != ysize:
+        raise ValueError(f"marked_dead is not the same length as stones {ysize}")
+    for row in marked_dead:
+        if len(row) != xsize:
+            raise ValueError(f"Not all rows in marked_dead are the same length as stones {xsize}")
+
+    # Is there a path from this location to a living stone of the given color
+    # that doesn't contain a living stone of the opponent?
+    strict_reaches_black: List[List[bool]] = make_array(ysize,xsize,False)
+    strict_reaches_white: List[List[bool]] = make_array(ysize,xsize,False)
+    mark_reachability(ysize,xsize,stones,marked_dead,None,strict_reaches_black,strict_reaches_white)
+
+    scoring: List[List[Color]] = make_array(ysize,xsize,EMPTY)
+    for y in range(ysize):
+        for x in range(xsize):
+            if strict_reaches_white[y][x] and not strict_reaches_black[y][x]:
+                scoring[y][x] = WHITE
+            if strict_reaches_black[y][x] and not strict_reaches_white[y][x]:
+                scoring[y][x] = BLACK
+    return scoring
+
 
 def get_opp(pla: Color) -> Color:
     return 3 - pla

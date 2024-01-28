@@ -9,7 +9,7 @@
     <link type="text/css" href="./test.css" rel="stylesheet" />
 
     <script type="module">
-      import { EMPTY, BLACK, WHITE, finalTerritoryScore, territoryScoring, string2d } from "../javascript/goscorer.js";
+      import { EMPTY, BLACK, WHITE, finalTerritoryScore, finalAreaScore, territoryScoring, areaScoring, string2d } from "../javascript/goscorer.js";
 
       var markedDead = Array.from({length: 19}, () => Array.from({length: 19}, () => false));
 
@@ -109,6 +109,24 @@
               player.board.redraw();
           };
 
+          let updateInstructionBox = function() {
+              const toolBox = document.getElementById("toolBox");
+              const instructions = document.getElementById("instructions");
+              if(toolBox.value == "play")
+                  instructions.textContent = "Click board to play stones. Click on stones to toggle marking as dead/alive.";
+              else if(toolBox.value == "setblack")
+                  instructions.textContent = "Click board to set/remove black stones.";
+              else if(toolBox.value == "setwhite")
+                  instructions.textContent = "Click board to set/remove white stones.";
+              else
+                  instructions.textContent = "";
+          };
+          updateInstructionBox();
+          document.getElementById("toolBox").addEventListener("change", updateInstructionBox);
+          document.getElementById("scoringBox").addEventListener("change", function() {
+              player.board.redraw();
+          });
+
           // Remove existing click listeners on board
           let existingClickListeners = [];
           for(let listener of player.board.listeners) {
@@ -125,28 +143,51 @@
               if(!player.kifuReader || !player.kifuReader.node)
                   return false;
               let moveAlreadyExists = false;
-              for(let i in player.kifuReader.node.children) {
-                  if(player.kifuReader.node.children[i].move &&
-                     player.kifuReader.node.children[i].move.x == x &&
-                     player.kifuReader.node.children[i].move.y == y) {
-                      player.next(i);
-                      return;
+
+              const toolBox = document.getElementById("toolBox");
+              if(toolBox.value == "play") {
+                  for(let i in player.kifuReader.node.children) {
+                      if(player.kifuReader.node.children[i].move &&
+                         player.kifuReader.node.children[i].move.x == x &&
+                         player.kifuReader.node.children[i].move.y == y) {
+                          player.next(i);
+                          return;
+                      }
+                  }
+                  if(!moveAlreadyExists) {
+                      let c = WGo.B;
+                      if(player.kifuReader.node.move && player.kifuReader.node.move.c == WGo.B) {
+                          c = WGo.W;
+                      }
+
+                      if(player.kifuReader.game.isValid(x,y,c)) {
+                          player.kifuReader.node.appendChild(new WGo.KNode({move:{x:x,y:y,c:c}}));
+                          player.next(player.kifuReader.node.children.length-1);
+                      }
+                      else if(player.kifuReader.game.isOnBoard(x,y) && player.kifuReader.game.getStone(x,y) != 0) {
+                          recursiveMarkDead(x,y,player.kifuReader.game.getStone(x,y),!markedDead[y][x]);
+                          player.board.redraw();
+                      }
                   }
               }
-              if(!moveAlreadyExists) {
-                  let c = WGo.B;
-                  if(player.kifuReader.node.move && player.kifuReader.node.move.c == WGo.B) {
+              else {
+                  let c;
+                  if(toolBox.value == "setblack")
+                      c = WGo.B;
+                  else if(toolBox.value == "setwhite")
                       c = WGo.W;
-                  }
+                  else
+                      return;
 
-                  if(player.kifuReader.game.isValid(x,y,c)) {
-                      player.kifuReader.node.appendChild(new WGo.KNode({move:{x:x,y:y,c:c}}));
-                      player.next(player.kifuReader.node.children.length-1);
+                  let node = new WGo.KNode({});
+                  if(player.kifuReader.game.getStone(x,y) == c) {
+                      node.addSetup({x:x,y:y,c:0});
                   }
-                  else if(player.kifuReader.game.isOnBoard(x,y) && player.kifuReader.game.getStone(x,y) != 0) {
-                      recursiveMarkDead(x,y,player.kifuReader.game.getStone(x,y),!markedDead[y][x]);
-                      player.board.redraw();
+                  else {
+                      node.addSetup({x:x,y:y,c:c});
                   }
+                  player.kifuReader.node.appendChild(node);
+                  player.next(player.kifuReader.node.children.length-1);
               }
           });
 
@@ -203,52 +244,104 @@
                               EMPTY
                       )
               );
-              let scoring = territoryScoring(stones,markedDead);
+              const scoringBox = document.getElementById("scoringBox");
+              if(scoringBox.value == "territory") {
+                  let scoring = territoryScoring(stones,markedDead);
 
-              let blackScoreFromTerritory = 0;
-              let whiteScoreFromTerritory = 0;
-              let blackScoreFromDeadStones = 0;
-              let whiteScoreFromDeadStones = 0;
-              for(let y = 0; y<sizey; y++) {
-                  for(let x = 0; x<sizex; x++) {
-                      if(scoring[y][x].isTerritoryFor == BLACK)
-                          blackScoreFromTerritory += 1;
-                      else if(scoring[y][x].isTerritoryFor == WHITE)
-                          whiteScoreFromTerritory += 1;
+                  let blackScoreFromTerritory = 0;
+                  let whiteScoreFromTerritory = 0;
+                  let blackScoreFromDeadStones = 0;
+                  let whiteScoreFromDeadStones = 0;
+                  for(let y = 0; y<sizey; y++) {
+                      for(let x = 0; x<sizex; x++) {
+                          if(scoring[y][x].isTerritoryFor == BLACK)
+                              blackScoreFromTerritory += 1;
+                          else if(scoring[y][x].isTerritoryFor == WHITE)
+                              whiteScoreFromTerritory += 1;
 
-                      if(stones[y][x] == BLACK && markedDead[y][x])
-                          whiteScoreFromDeadStones += 1;
-                      else if(stones[y][x] == WHITE && markedDead[y][x])
-                          blackScoreFromDeadStones += 1;
+                          if(stones[y][x] == BLACK && markedDead[y][x])
+                              whiteScoreFromDeadStones += 1;
+                          else if(stones[y][x] == WHITE && markedDead[y][x])
+                              blackScoreFromDeadStones += 1;
 
-                      if(scoring[y][x].isTerritoryFor != EMPTY) {
-                          //Get pixel coordinates
-                          let xp = board.getX(x);
-                          let yp = board.getY(y);
-                          let sr = board.stoneRadius;
-                          if(scoring[y][x].isTerritoryFor == BLACK) this.context.fillStyle = "rgba(0,0,0,0.65)";
-                          else this.context.fillStyle = "rgba(255,255,255,0.75)";
-                          this.context.beginPath();
-                          this.context.rect(xp-sr*0.92, yp-sr*0.92, sr*0.92*2, sr*0.92*2);
-                          this.context.fill();
+                          if(scoring[y][x].isTerritoryFor != EMPTY) {
+                              //Get pixel coordinates
+                              let xp = board.getX(x);
+                              let yp = board.getY(y);
+                              let sr = board.stoneRadius;
+                              if(scoring[y][x].isTerritoryFor == BLACK) this.context.fillStyle = "rgba(0,0,0,0.65)";
+                              else this.context.fillStyle = "rgba(255,255,255,0.75)";
+                              this.context.beginPath();
+                              this.context.rect(xp-sr*0.92, yp-sr*0.92, sr*0.92*2, sr*0.92*2);
+                              this.context.fill();
+                          }
                       }
                   }
+                  let blackScoreFromCaptures = player.kifuReader.game.getCaptureCount(WGo.B);
+                  let whiteScoreFromCaptures = player.kifuReader.game.getCaptureCount(WGo.W);
+                  let komi = ("KM" in player.kifu.info ? Number(player.kifu.info.KM) : 6.5);
+                  if(isNaN(komi))
+                      komi = 6.5;
+
+                  let blackTotal = blackScoreFromTerritory + blackScoreFromDeadStones + blackScoreFromCaptures;
+                  let whiteTotal = whiteScoreFromTerritory + whiteScoreFromDeadStones + whiteScoreFromCaptures + komi;
+
+                  const blackScoreSummary = document.getElementById("blackScoreSummary");
+                  const whiteScoreSummary = document.getElementById("whiteScoreSummary");
+                  blackScoreSummary.textContent =
+                      `Black score: ${blackScoreFromTerritory} (territory) + ${blackScoreFromDeadStones} (dead) + ${blackScoreFromCaptures} (captures) = ${blackTotal}`;
+                  whiteScoreSummary.textContent =
+                      `White score: ${whiteScoreFromTerritory} (territory) + ${whiteScoreFromDeadStones} (dead) + ${whiteScoreFromCaptures} (captures) + ${komi} (komi) = ${whiteTotal}`;
               }
-              let blackScoreFromCaptures = player.kifuReader.game.getCaptureCount(WGo.B);
-              let whiteScoreFromCaptures = player.kifuReader.game.getCaptureCount(WGo.W);
-              let komi = ("KM" in player.kifu.info ? Number(player.kifu.info.KM) : 6.5);
-              if(isNaN(komi))
-                  komi = 6.5;
+              else {
+                  let scoring = areaScoring(stones,markedDead);
+                  let blackScoreFromStones = 0;
+                  let whiteScoreFromStones = 0;
+                  let blackScoreFromTerritory = 0;
+                  let whiteScoreFromTerritory = 0;
+                  for(let y = 0; y<sizey; y++) {
+                      for(let x = 0; x<sizex; x++) {
+                          if(scoring[y][x] == BLACK) {
+                              if(stones[y][x] == BLACK && !markedDead[y][x])
+                                  blackScoreFromStones += 1;
+                              else
+                                  blackScoreFromTerritory += 1;
+                          }
+                          if(scoring[y][x] == WHITE) {
+                              if(stones[y][x] == WHITE && !markedDead[y][x])
+                                  whiteScoreFromStones += 1;
+                              else
+                                  whiteScoreFromTerritory += 1;
+                          }
 
-              let blackTotal = blackScoreFromTerritory + blackScoreFromDeadStones + blackScoreFromCaptures;
-              let whiteTotal = whiteScoreFromTerritory + whiteScoreFromDeadStones + whiteScoreFromCaptures + komi;
+                          if(scoring[y][x] != EMPTY) {
+                              //Get pixel coordinates
+                              let xp = board.getX(x);
+                              let yp = board.getY(y);
+                              let sr = board.stoneRadius;
+                              if(scoring[y][x] == BLACK) this.context.fillStyle = "rgba(0,0,0,0.65)";
+                              else this.context.fillStyle = "rgba(255,255,255,0.75)";
+                              this.context.beginPath();
+                              this.context.rect(xp-sr*0.92, yp-sr*0.92, sr*0.92*2, sr*0.92*2);
+                              this.context.fill();
+                          }
+                      }
+                  }
+                  let komi = ("KM" in player.kifu.info ? Number(player.kifu.info.KM) : 6.5);
+                  if(isNaN(komi))
+                      komi = 6.5;
 
-              const blackScoreSummary = document.getElementById("blackScoreSummary");
-              const whiteScoreSummary = document.getElementById("whiteScoreSummary");
-              blackScoreSummary.textContent =
-                  `Black score: ${blackScoreFromTerritory} (territory) + ${blackScoreFromDeadStones} (dead) + ${blackScoreFromCaptures} (captures) = ${blackTotal}`;
-              whiteScoreSummary.textContent =
-                  `White score: ${whiteScoreFromTerritory} (territory) + ${whiteScoreFromDeadStones} (dead) + ${whiteScoreFromCaptures} (captures) + ${komi} (komi) = ${whiteTotal}`;
+                  let blackTotal = blackScoreFromTerritory + blackScoreFromStones;
+                  let whiteTotal = whiteScoreFromTerritory + whiteScoreFromStones + komi;
+
+                  const blackScoreSummary = document.getElementById("blackScoreSummary");
+                  const whiteScoreSummary = document.getElementById("whiteScoreSummary");
+                  blackScoreSummary.textContent =
+                      `Black score: ${blackScoreFromTerritory} (territory) + ${blackScoreFromStones} (stones) = ${blackTotal}`;
+                  whiteScoreSummary.textContent =
+                      `White score: ${whiteScoreFromTerritory} (territory) + ${whiteScoreFromStones} (stones) + ${komi} (komi) = ${whiteTotal}`;
+
+              }
           };
           player.board.addLayer(new TerritoryLayer(),350);
           player.board.redraw();
@@ -258,10 +351,20 @@
   </head>
   <body>
     <div class="title">
-      Territory Scoring Tester
+      Go Scoring Tester
     </div>
     <div class="instructionPane">
-      Click board to play stones. Click on stones to toggle marking as dead/alive.
+      <select id="scoringBox">
+        <option value="territory" selected>Territory scoring (Japanese-like)</option>
+        <option value="area">Area scoring (Chinese-like)</option>
+      </select>
+      <select id="toolBox">
+        <option value="play" selected>Play/mark stones</option>
+        <option value="setblack">Set/remove black stones</option>
+        <option value="setwhite">Set/remove white stones</option>
+      </select>
+      <span id="instructions">
+      </span>
     </div>
     <div class="sgfFileChooserPane">
       Load SGF File:
