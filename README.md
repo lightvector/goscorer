@@ -6,7 +6,7 @@ Territory scoring in Go with automated seki detection is very challenging. The i
 In practice, this implementation does NOT require players to fill all the dame. By default it will automatically exclude counting obvious false eye shapes that must eventually be filled, although this can be configured. Of course, this will not catch all necessary internal protections. Players still need to play enough of the dame to force internal protections that aren't simply false eye shapes.
 
 <table class="image">
-<tr><td><img src="https://raw.githubusercontent.com/lightvector/goscorer/master/images/example.png" height="450"/></td></tr>
+<tr><td><img src="https://raw.githubusercontent.com/lightvector/goscorer/master/images/example.png" height="350"/></td></tr>
 <tr><td><sub>Top groups are correctly detected as alive in seki and no territory is counted. Bottom groups are alive with territory, but territory is still not counted for some of the false eyes.</sub></tr></td>
 </table>
 
