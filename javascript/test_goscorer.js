@@ -77,7 +77,7 @@ function testFinalScoring() {
     }
 }
 
-function printTest(stonestr) {
+function getOutput(stonestr) {
     const { stones, markedDead } = stonesAndMarkedDeadOfStr(stonestr);
     const rows = stonestr.split("\n").map(row => row.trim()).filter(row => row !== "");
     const scoring = territoryScoring(stones, markedDead);
@@ -122,11 +122,22 @@ function printTest(stonestr) {
     output += string2d2(scoring, rows, (s, c) =>
                         s.eyeValue === 0 ? c : "0123456789"[s.eyeValue]
                        ) + "\n";
-
-    console.log(output);
+    return output;
 }
 
-function printAllTests(stonestr) {
+function printTest(stonestr) {
+    console.log(getOutput(stonestr));
+}
+
+function runTest(stonestr, expectedPath) {
+    fetch(expectedPath)
+        .then((res) => res.text())
+        .then((text) => {console.assert(text === getOutput(stonestr), getOutput(stonestr), expectedPath);})
+        .catch((e) => console.error(e));
+}
+
+function runAllTests() {
+    let stonestr;
 
     stonestr = `
     .........
@@ -139,8 +150,7 @@ function printAllTests(stonestr) {
     .........
     .........
     `;
-    printTest(stonestr);
-
+    runTest(stonestr,"/python/expected_test_output/test_empty.txt");
 
     stonestr = `
     ......x..
@@ -153,8 +163,7 @@ function printAllTests(stonestr) {
     ...o.o..o
     .....o...
     `;
-    printTest(stonestr);
-
+    runTest(stonestr,"/python/expected_test_output/test_basic.txt");
 
     stonestr = `
     ..w...xw.
@@ -167,7 +176,7 @@ function printAllTests(stonestr) {
     ob.o.o..o
     .ooooo.b.
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_dead_stone_marking.txt");
 
 
     stonestr = `
@@ -181,8 +190,7 @@ function printAllTests(stonestr) {
     ...o.o.ox
     .....ooo.
     `;
-    printTest(stonestr);
-
+    runTest(stonestr,"/python/expected_test_output/test_false_eyes.txt");
 
 
     stonestr = `
@@ -196,7 +204,7 @@ function printAllTests(stonestr) {
     bbbbb..o.
     ....b...b
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_false_eyes_2.txt");
 
 
 
@@ -210,7 +218,7 @@ function printAllTests(stonestr) {
     ......oxx
     .......x.
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_false_eyes_chain.txt");
 
 
 
@@ -224,7 +232,7 @@ function printAllTests(stonestr) {
     ......oxx
     .......x.
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_false_eyes_chain_bamboo.txt");
 
 
 
@@ -238,7 +246,7 @@ function printAllTests(stonestr) {
     ......oxx
     .......x.
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_false_eyes_chain_no_bamboo.txt");
 
 
 
@@ -252,7 +260,8 @@ function printAllTests(stonestr) {
     ......oxx
     .......x.
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_false_eyes_chain_loose_eye.txt");
+
 
 
 
@@ -266,7 +275,7 @@ function printAllTests(stonestr) {
     ......oxx
     .......x.
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_false_eyes_chain_loose_eye_2.txt");
 
 
 
@@ -280,7 +289,7 @@ function printAllTests(stonestr) {
     ......oxx
     .......x.
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_false_eyes_chain_loose_eye_3.txt");
 
 
 
@@ -294,7 +303,7 @@ function printAllTests(stonestr) {
     ......oxx
     .......x.
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_false_eyes_chain_loose_eye_4.txt");
 
 
 
@@ -308,7 +317,7 @@ function printAllTests(stonestr) {
     x.o...oxx
     ..o...ox.
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_false_eyes_chain_big_false_eye.txt");
 
 
 
@@ -322,7 +331,7 @@ function printAllTests(stonestr) {
     x.o.oxxxx
     ..o.ox.x.
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_false_eyes_chain_big_false_eye_aliveend.txt");
 
 
 
@@ -336,7 +345,7 @@ function printAllTests(stonestr) {
     x.o.oxxxx
     .xo.ox.w.
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_false_eyes_chain_big_false_eye_aliveends.txt");
 
 
 
@@ -347,7 +356,7 @@ function printAllTests(stonestr) {
     ox.o..ooo..xxo.ox
     .x.o.b.......oxx.
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_basic_sekis.txt");
 
 
 
@@ -358,7 +367,7 @@ function printAllTests(stonestr) {
     wx.o..ooo..xxo.ob
     .x.o.x.......obb.
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_basic_sekis_marked_dead.txt");
 
 
 
@@ -374,7 +383,7 @@ function printAllTests(stonestr) {
     .xoooox.x.x.xooxx
     x.o.box.....xo.o.
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_more_fancy_sekis.txt");
 
 
 
@@ -385,7 +394,7 @@ function printAllTests(stonestr) {
     xoxxo.......oxxwx
     o.oxo.......oxw.w
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_double_ko_death.txt");
 
 
 
@@ -396,7 +405,7 @@ function printAllTests(stonestr) {
     boxxo.......oxxwb
     o.oxo.......oxw.w
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_double_ko_death2.txt");
 
 
     stonestr = `
@@ -406,7 +415,7 @@ function printAllTests(stonestr) {
     xo.o.ox...xo.oxox
     oooooox...xo.oooo
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_double_ko.txt");
 
 
     stonestr = `
@@ -416,7 +425,7 @@ function printAllTests(stonestr) {
     bo.o.ox...xo.obob
     oooooox...xo.oooo
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_double_ko2.txt");
 
 
 
@@ -427,7 +436,7 @@ function printAllTests(stonestr) {
     .x.o..ooo..x.o..ooo..x.o..ooo..x
     .x.o.b.....x.o.......x.o.b..o..x
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_loose_nakade.txt");
 
 
 
@@ -439,7 +448,7 @@ function printAllTests(stonestr) {
     .xo.xxooox..
     xxo.ooooox..
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_cycle.txt");
 
 
     stonestr = `
@@ -450,7 +459,7 @@ function printAllTests(stonestr) {
     .xo.xxooox..
     xxo.ooooox..
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_cycle_false_eye.txt");
 
 
     stonestr = `
@@ -461,7 +470,7 @@ function printAllTests(stonestr) {
     .xo.xxooox..
     xxo.ooooox..
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_cycle_real_eye.txt");
 
 
     stonestr = `
@@ -472,7 +481,7 @@ function printAllTests(stonestr) {
     .xo.xxo.ox..
     xxo.ooooox..
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_cycle_real_2eye.txt");
 
 
 
@@ -484,7 +493,7 @@ function printAllTests(stonestr) {
     .xoxoooxox..
     xxoo...oox..
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_cycle_real_3spaceeye.txt");
 
 
 
@@ -499,7 +508,7 @@ function printAllTests(stonestr) {
     ooooxxoo.x..
     xxxxxxxxx...
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_bamboo_interleave_seki.txt");
 
 
 
@@ -514,7 +523,7 @@ function printAllTests(stonestr) {
     ooooxxoo.x..
     xxxxxxxxx...
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_no_bamboo_interleave_seki_broken.txt");
 
 
 
@@ -530,7 +539,7 @@ function printAllTests(stonestr) {
     x.oxxxxx.o....
     xxxww..x.o....
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_double_throwin_seki4.txt");
 
 
 
@@ -546,7 +555,7 @@ function printAllTests(stonestr) {
     x.oxxxxx.o....
     xxxww.xx.o....
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_double_throwin_seki3.txt");
 
 
     stonestr = `
@@ -556,7 +565,7 @@ function printAllTests(stonestr) {
     .x...xx...x...
     ..x.x..x.x....
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_side_bamboo_cut.txt");
 
 
     stonestr = `
@@ -568,7 +577,7 @@ function printAllTests(stonestr) {
     .o.xxx.o.o....
     .o...oo.......
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_cross_noseal.txt");
 
 
     stonestr = `
@@ -580,7 +589,7 @@ function printAllTests(stonestr) {
     .o.xxx.o.o....
     .o...oo.......
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_cross_nothrowin.txt");
 
 
     stonestr = `
@@ -592,7 +601,7 @@ function printAllTests(stonestr) {
     .o.xxx.o.o....
     .o...oo.......
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_cross_nopoke.txt");
 
 
     stonestr = `
@@ -604,7 +613,7 @@ function printAllTests(stonestr) {
     .o.xxx.o.o....
     .o...oo.......
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_cross_poke.txt");
 
 
     stonestr = `
@@ -616,7 +625,7 @@ function printAllTests(stonestr) {
     .o.xxx.o.o....
     .o...oo.......
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_cross_poke_deeper.txt");
 
 
     stonestr = `
@@ -627,7 +636,7 @@ function printAllTests(stonestr) {
     .xoox.x.o....
     ..xx..x.o....
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_three_point_false_eye.txt");
 
 
     stonestr = `
@@ -638,7 +647,7 @@ function printAllTests(stonestr) {
     .xoox.x.o....
     ..xx..x.o....
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_three_point_false_eye_cycle.txt");
 
 
 
@@ -650,7 +659,7 @@ function printAllTests(stonestr) {
     .o.xxx.o.....o.x.x.o..ox.xo...
     ..ooooo.......oxxxo..xxw.wxx..
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_three_way_pokes.txt");
 
 
     stonestr = `
@@ -661,7 +670,7 @@ function printAllTests(stonestr) {
     xxxxxx..
     ........
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_belly_eye.txt");
 
 
 
@@ -673,7 +682,7 @@ function printAllTests(stonestr) {
     xxxxxx..
     ........
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_belly_eye2.txt");
 
 
 
@@ -688,7 +697,7 @@ function printAllTests(stonestr) {
     xxxxxxx...xxxxxxxxxxxxxxxx...xxx
     x....xxxxxxxxxxxxxxxxxxxxxxxxxxx
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_solid_eyeshapes.txt");
 
 
     stonestr = `
@@ -702,7 +711,7 @@ function printAllTests(stonestr) {
     xxxxxxx.w.xxxxxxxxxxxxxxxx...xxx
     x..w.xxxxxxxxxxxxxxxxxxxxxxxxxxx
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_solid_eyeshapes_nakade.txt");
 
 
 
@@ -717,7 +726,7 @@ function printAllTests(stonestr) {
     xxxxxxxww.xxx...xxxxxxxxxx.w.xxx
     x.ww.xxxxxxxx.wwxxxxxxxxxxxxxxxx
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_solid_eyeshapes_nakade2.txt");
 
 
     stonestr = `
@@ -727,7 +736,7 @@ function printAllTests(stonestr) {
     o.o..o.o.x.x..x.x
     .ooxxoooxxxxooxx.
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_bamboo_reachable_seki.txt");
 
 
 
@@ -740,7 +749,7 @@ function printAllTests(stonestr) {
     ooox.....xooo
     xxxx.....xxxx
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_hanezeki.txt");
 
 
     stonestr = `
@@ -752,7 +761,7 @@ function printAllTests(stonestr) {
     ooox.....xooo
     xxxx.....xxxx
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_hanezeki2.txt");
 
 
     stonestr = `
@@ -763,7 +772,7 @@ function printAllTests(stonestr) {
     .oooxx
     xxxo.x
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_big_eye_seki.txt");
 
 
     stonestr = `
@@ -779,7 +788,7 @@ function printAllTests(stonestr) {
     ...xxo...ox...xxooooooxw.w
     ....xo...ox.....x.o.o.xw.w
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_lgroups_and_rectanglelikes.txt");
 
 
     stonestr = `
@@ -795,7 +804,7 @@ function printAllTests(stonestr) {
     ..wxxo...ox...xooooooox...
     ...wxo...ox....x.oo.o.x.w.
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_lgroups_and_rectanglelikes2.txt");
 
 
     stonestr = `
@@ -811,7 +820,7 @@ function printAllTests(stonestr) {
     ...xxo...ox.w.xxoo..oxx...
     ..w.xo...ox.w..x.o..ox.w..
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_lgroups_and_rectanglelikes3.txt");
 
 
     stonestr = `
@@ -827,7 +836,7 @@ function printAllTests(stonestr) {
     ...xxo...ox...xxoo..oxx...
     ..w.xo...ox..wwx.o..oxxwww
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_lgroups_and_rectanglelikes4.txt");
 
 
     stonestr = `
@@ -843,7 +852,7 @@ function printAllTests(stonestr) {
     w..xxo.oxx....xxoo..oxx.ww
     ..w.xo.ox.wwww.x.o..oxxwww
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_lgroups_and_rectanglelikes5.txt");
 
 
     stonestr = `
@@ -852,7 +861,7 @@ function printAllTests(stonestr) {
     .w.xxo.oxx..w.xxoo..oxx.w.
     ..w.xo.oxxxxxxx..o..oxx...
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_lgroups_and_rectanglelikes6.txt");
 
 
 
@@ -863,8 +872,7 @@ function printAllTests(stonestr) {
     xxoxxxooxxxoxxoooxxxoxxx
     .xx..xooooooooo.ooooooo.
     `;
-    printTest(stonestr);
-
+    runTest(stonestr,"/python/expected_test_output/test_two_point_eye_falsity.txt");
 
 
     stonestr = `
@@ -875,7 +883,7 @@ function printAllTests(stonestr) {
     xooooxoxxxxxo.......
     xxxxx.xx.w.xo.......
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_false_eye_multicycles1.txt");
 
 
     stonestr = `
@@ -886,7 +894,7 @@ function printAllTests(stonestr) {
     xoooxxoxxxxxo.......
     xxxxx.xx.w.xo.......
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_false_eye_multicycles2.txt");
 
 
     stonestr = `
@@ -897,7 +905,7 @@ function printAllTests(stonestr) {
     xooooxxxxxxxo.......
     xxxxx.xx.w.xo.......
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_false_eye_multicycles3.txt");
 
 
     stonestr = `
@@ -908,7 +916,7 @@ function printAllTests(stonestr) {
     xoooxxxoxxxxo.......
     xxxxxoooooooo.......
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_false_eye_multicycles4.txt");
 
 
     stonestr = `
@@ -919,7 +927,7 @@ function printAllTests(stonestr) {
     xoooxoxxxxxxo.......
     xxxxxoooooooo.......
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_false_eye_multicycles5.txt");
 
 
     stonestr = `
@@ -930,7 +938,7 @@ function printAllTests(stonestr) {
     xoooxoxxxxxxo.......
     xxxxxoooooooo.......
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_false_eye_multicycles6.txt");
 
 
     stonestr = `
@@ -942,7 +950,7 @@ function printAllTests(stonestr) {
     xxxxxoooooxxxxxxxxoooooxxxxxxxooo...oooxxxxxx
     .......o............o...........o...o........
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_live_in_a_row.txt");
 
 
     stonestr = `
@@ -954,7 +962,7 @@ function printAllTests(stonestr) {
     xxxxxoooooxxxxxxxxoooooxxxxxxxooo...oooxxxxxx
     .....x.o.x........x.o.x.......x.o...o.x......
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_live_in_a_row_with_hane.txt");
 
 
     stonestr = `
@@ -966,7 +974,7 @@ function printAllTests(stonestr) {
     xxxxxoooooxxxxxxxxoooooxxxxxxxooo...oooxxxxxx
     ....wx.o.xw.......x.o.xw......x.o...o.xw.....
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_live_in_a_row_with_hane_throwin.txt");
 
 
     stonestr = `
@@ -978,7 +986,7 @@ function printAllTests(stonestr) {
     xxxxxoooooxxxxxxxxoooooxxxxxxxooo...oooxxxxxx
     ...wwx.o.xww......x.o.xww.....x.o...o.xww....
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_live_in_a_row_with_hane_throwin_poke.txt");
 
     stonestr = `
     .wxx.x.xx.x.x.xx..
@@ -990,13 +998,89 @@ function printAllTests(stonestr) {
     xxxoxxoxx.xoxxox.x
     .wwxx.xx.xxx.xxww.
     `;
-    printTest(stonestr);
+    runTest(stonestr,"/python/expected_test_output/test_throwin_false_eye_chains.txt");
+
+    stonestr = `
+    .box...x...ox.www.
+    bboxx.x.x..oxxxxxx
+    ooooxx.x...ooooooo
+    ...xo.............
+    xxxxo.............
+    .w.xo.....oooooooo
+    xxxxo.....oxxxxxxx
+    ooooo.....ox.wwww.
+    `;
+    runTest(stonestr,"/python/expected_test_output/test_various_eyefillings.txt");
+
+    stonestr = `
+    ..xxox.xobbb.oxxw.
+    wwwxox.xobboooxw.w
+    ww.xox.xooooo.xwwx
+    xxxxox.xxo...xx.xx
+    ooooooxxxoxxxxxxxo
+    xxxxxo..xxoooooooo
+    xww.xooooooxxxxxxx
+    wwxxx.o.o.ox.wwww.
+    `;
+    runTest(stonestr,"/python/expected_test_output/test_various_eyefillings2.txt");
+
+    stonestr = `
+    wwxxox.xobbb.oxxw.
+    wwwxox.xobbbooxwww
+    ww.xox.xooooo.xwwx
+    xxxxox.xxo...xx.xx
+    ooooooxxxoxxxxxxxo
+    xxxxxo..xxoooooooo
+    xww.xooooooxxxxxxx
+    .wxxx.o.o.ox.w.ww.
+    `;
+    runTest(stonestr,"/python/expected_test_output/test_various_eyefillings3.txt");
+
+    stonestr = `
+    bbbboooo.x.oooobbbb
+    bbbox...x.x...xobbb
+    ..oo.xxxx..xxx.oob.
+    ooo.xx.......xx.ooo
+    ....x.........x....
+    xxxxx.........xxxxx
+    `;
+    runTest(stonestr,"/python/expected_test_output/test_various_eyefillings4.txt");
+
+    stonestr = `
+    .b.oxxo.bbb.oxxo.bb
+    boooxxoooboooxxooob
+    .o.xxxx.o.o.xxxx.o.
+    oox....xooox....xoo
+    xxx....xxxxx....xxx
+    oox....xxxxx....xxx
+    .o.x...xooox....xoo
+    bo..xxx.o.o.xxxx.o.
+    booooxoooboooxxooob
+    .bb.oxo.b.b.oxxoob.
+    `;
+    runTest(stonestr,"/python/expected_test_output/test_various_eyefillings5.txt");
+
+    stonestr = `
+    ...xo.......xox..x
+    ...xo.......xox...
+    ...xo.......xox...
+    xxxxo.......xoxxxx
+    oooox.......xooooo
+    ..oox.......xo....
+    ...ox.......xo....
+    ...ox.......xo....
+    `;
+    runTest(stonestr,"/python/expected_test_output/test_various_corner_eyes.txt");
+
+
 }
 
 export {
     stonesAndMarkedDeadOfStr,
     testFinalScoring,
+    getOutput,
     printTest,
-    printAllTests,
+    runTest,
+    runAllTests,
 };
 

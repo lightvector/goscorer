@@ -1068,7 +1068,7 @@ def test_various_eyefillings5():
     .o.x...xooox....xoo
     bo..xxx.o.o.xxxx.o.
     booooxoooboooxxooob
-    bbb.oxo.b.b.oxxoob.
+    .bb.oxo.b.b.oxxoob.
     """
     run_snapshot_test(inspect.currentframe().f_code.co_name, stonestr)
 

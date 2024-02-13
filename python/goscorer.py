@@ -599,6 +599,7 @@ class ChainInfo:
     points: List[Tuple[int,int]]
     neighbors: Set[ChainId]
     adjacents: Set[Tuple[int,int]]
+    liberties: Set[Tuple[int,int]]
     is_marked_dead: bool
 
 def mark_chains(
@@ -622,9 +623,13 @@ def mark_chains(
             chain_infos_by_id[other_id].neighbors.add(with_id)
             chain_infos_by_id[with_id].neighbors.add(other_id)
             chain_infos_by_id[with_id].adjacents.add((y,x))
+            if stones[y][x] == EMPTY:
+                chain_infos_by_id[with_id].liberties.add((y,x))
             return
         if stones[y][x] != color or marked_dead[y][x] != is_marked_dead:
             chain_infos_by_id[with_id].adjacents.add((y,x))
+            if stones[y][x] == EMPTY:
+                chain_infos_by_id[with_id].liberties.add((y,x))
             return
         chain_ids[y][x] = with_id
         chain_infos_by_id[with_id].points.append((y,x))
@@ -656,6 +661,7 @@ def mark_chains(
                     points=[],
                     neighbors=set(),
                     adjacents=set(),
+                    liberties=set(),
                     is_marked_dead=is_marked_dead,
                 )
                 assert is_marked_dead or color == EMPTY or region_ids[y][x] != -1
@@ -1004,6 +1010,28 @@ def get_pieces(ysize: int, xsize: int, points: Set[Tuple[int,int]], points_to_de
             pieces.append(piece)
     return pieces
 
+def is_pseudolegal(
+    ysize: int,
+    xsize: int,
+    stones: List[List[Color]],
+    chain_ids: List[List[ChainId]],
+    chain_infos_by_id: Dict[ChainId,ChainInfo],
+    y: int,
+    x: int,
+    pla: Color,
+) -> bool:
+    if stones[y][x] != EMPTY:
+        return False
+    adjacents = [(y-1,x),(y+1,x),(y,x-1),(y,x+1)]
+    opp = get_opp(pla)
+    for (ay,ax) in adjacents:
+        if is_on_board(ay,ax,ysize,xsize):
+            if stones[ay][ax] != opp:
+                return True
+            if len(chain_infos_by_id[chain_ids[ay][ax]].liberties) <= 1:
+                return True
+    return False
+
 @dataclass
 class EyePointInfo:
     adj_points: List[Tuple[int,int]]
@@ -1114,12 +1142,13 @@ def mark_eye_values(
             eye_value = 1
 
         # General for all eyes - if the eye contains a topologically interior bottleneck with respect
-        # to the graph of points contained only within the eye itself and it is empty so it can be played
+        # to the graph of points contained only within the eye itself and it can be played
         # and there are at least N pieces that have a point with <= 0 moves to block off, count N eye value
         for point_to_delete in eye_info.real_points:
             (dy,dx) = point_to_delete
-            if stones[dy][dx] != EMPTY:
+            if not is_pseudolegal(ysize,xsize,stones,chain_ids,chain_infos_by_id,dy,dx,pla):
                 continue
+
             pieces = get_pieces(ysize,xsize,eye_info.real_points,set([point_to_delete]))
             if len(pieces) < 2:
                 continue

@@ -562,13 +562,14 @@ function markRegions(
 
 
 class ChainInfo {
-    constructor(chainId, regionId, color, points, neighbors, adjacents, isMarkedDead) {
+    constructor(chainId, regionId, color, points, neighbors, adjacents, liberties, isMarkedDead) {
         this.chainId = chainId;
         this.regionId = regionId;
         this.color = color;
         this.points = points;
         this.neighbors = neighbors;
         this.adjacents = adjacents;
+        this.liberties = liberties;
         this.isMarkedDead = isMarkedDead;
     }
 }
@@ -594,10 +595,14 @@ function markChains(
             chainInfosById[otherId].neighbors.add(withId);
             chainInfosById[withId].neighbors.add(otherId);
             chainInfosById[withId].adjacents.add([y, x]);
+            if(stones[y][x] == EMPTY)
+                chainInfosById[withId].liberties.add([y, x]);
             return;
         }
         if(stones[y][x] !== color || markedDead[y][x] !== isMarkedDead) {
             chainInfosById[withId].adjacents.add([y, x]);
+            if(stones[y][x] == EMPTY)
+                chainInfosById[withId].liberties.add([y, x]);
             return;
         }
 
@@ -629,6 +634,7 @@ function markChains(
                     color,
                     [],
                     new Set(),
+                    new CoordinateSet(),
                     new CoordinateSet(),
                     isMarkedDead
                 );
@@ -1017,6 +1023,21 @@ function getPieces(ysize, xsize, points, pointsToDelete) {
     return pieces;
 }
 
+function isPseudoLegal(ysize, xsize, stones, chainIds, chainInfosById, y, x, pla) {
+    if(stones[y][x] !== EMPTY)
+        return false;
+    const adjacents = [[y-1, x], [y+1, x], [y, x-1], [y, x+1]];
+    const opp = getOpp(pla);
+    for(let [ay, ax] of adjacents) {
+        if(isOnBoard(ay, ax, ysize, xsize)) {
+            if(stones[ay][ax] !== opp)
+                return true;
+            if(chainInfosById[chainIds[ay][ax]].liberties.size <= 1)
+                return true;
+        }
+    }
+    return false;
+}
 
 class EyePointInfo {
     constructor(
@@ -1142,7 +1163,8 @@ function markEyeValues(
             eyeValue = 1;
 
         for(let [dy, dx] of eyeInfo.realPoints) {
-            if(stones[dy][dx] !== EMPTY)
+
+            if(!isPseudoLegal(ysize, xsize, stones, chainIds, chainInfosById, dy, dx, pla))
                 continue;
 
             const pieces = getPieces(ysize, xsize, eyeInfo.realPoints, new CoordinateSet([[dy, dx]]));
