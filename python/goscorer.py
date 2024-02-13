@@ -1007,7 +1007,8 @@ def get_pieces(ysize: int, xsize: int, points: Set[Tuple[int,int]], points_to_de
         if point not in used_points:
             piece = set()
             floodfill(point,piece)
-            pieces.append(piece)
+            if len(piece) > 0:
+                pieces.append(piece)
     return pieces
 
 def is_pseudolegal(

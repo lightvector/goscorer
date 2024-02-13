@@ -1017,7 +1017,8 @@ function getPieces(ysize, xsize, points, pointsToDelete) {
         if(!usedPoints.has(point)) {
             const piece = new CoordinateSet();
             floodfill(point, piece);
-            pieces.push(piece);
+            if(piece.size > 0)
+                pieces.push(piece);
         }
     }
     return pieces;
