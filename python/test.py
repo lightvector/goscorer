@@ -1006,3 +1006,83 @@ def test_throwin_false_eye_chains():
     .wwxx.xx.xxx.xxww.
     """
     run_snapshot_test(inspect.currentframe().f_code.co_name, stonestr)
+
+def test_various_eyefillings():
+    stonestr = """
+    .box...x...ox.www.
+    bboxx.x.x..oxxxxxx
+    ooooxx.x...ooooooo
+    ...xo.............
+    xxxxo.............
+    .w.xo.....oooooooo
+    xxxxo.....oxxxxxxx
+    ooooo.....ox.wwww.
+    """
+    run_snapshot_test(inspect.currentframe().f_code.co_name, stonestr)
+
+def test_various_eyefillings2():
+    stonestr = """
+    ..xxox.xobbb.oxxw.
+    wwwxox.xobboooxw.w
+    ww.xox.xooooo.xwwx
+    xxxxox.xxo...xx.xx
+    ooooooxxxoxxxxxxxo
+    xxxxxo..xxoooooooo
+    xww.xooooooxxxxxxx
+    wwxxx.o.o.ox.wwww.
+    """
+    run_snapshot_test(inspect.currentframe().f_code.co_name, stonestr)
+
+def test_various_eyefillings3():
+    stonestr = """
+    wwxxox.xobbb.oxxw.
+    wwwxox.xobbbooxwww
+    ww.xox.xooooo.xwwx
+    xxxxox.xxo...xx.xx
+    ooooooxxxoxxxxxxxo
+    xxxxxo..xxoooooooo
+    xww.xooooooxxxxxxx
+    .wxxx.o.o.ox.w.ww.
+    """
+    run_snapshot_test(inspect.currentframe().f_code.co_name, stonestr)
+
+def test_various_eyefillings4():
+    stonestr = """
+    bbbboooo.x.oooobbbb
+    bbbox...x.x...xobbb
+    ..oo.xxxx..xxx.oob.
+    ooo.xx.......xx.ooo
+    ....x.........x....
+    xxxxx.........xxxxx
+    """
+    run_snapshot_test(inspect.currentframe().f_code.co_name, stonestr)
+
+def test_various_eyefillings5():
+    stonestr = """
+    .b.oxxo.bbb.oxxo.bb
+    boooxxoooboooxxooob
+    .o.xxxx.o.o.xxxx.o.
+    oox....xooox....xoo
+    xxx....xxxxx....xxx
+    oox....xxxxx....xxx
+    .o.x...xooox....xoo
+    bo..xxx.o.o.xxxx.o.
+    booooxoooboooxxooob
+    bbb.oxo.b.b.oxxoob.
+    """
+    run_snapshot_test(inspect.currentframe().f_code.co_name, stonestr)
+
+def test_various_corner_eyes():
+    stonestr = """
+    ...xo.......xox..x
+    ...xo.......xox...
+    ...xo.......xox...
+    xxxxo.......xoxxxx
+    oooox.......xooooo
+    ..oox.......xo....
+    ...ox.......xo....
+    ...ox.......xo....
+    """
+    run_snapshot_test(inspect.currentframe().f_code.co_name, stonestr)
+
+
