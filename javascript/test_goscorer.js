@@ -739,6 +739,44 @@ function runAllTests() {
     runTest(stonestr,"/python/expected_test_output/test_bamboo_reachable_seki.txt");
 
 
+    stonestr = `
+    ..xx.o.............o.xx..
+    ...x.o.............o.x.w.
+    x..x.o.............o.x..x
+    xxxx.o.............o.xxxx
+    oooooo.............oooooo
+    xxxx.o.............o.xxxx
+    x.wx.o.............o.x..x
+    .w.x.o.............o.x.ww
+    ..xx.o.............o.xx..
+    `;
+    runTest(stonestr,"/python/expected_test_output/test_7pteyes.txt");
+
+    stonestr = `
+    ...x.o.............o.x...
+    ...x.o.............o.x.w.
+    x.xx.o.............o.xx.x
+    xxxx.o.............o.xxxx
+    oooooo.............oooooo
+    xxxx.o.............o.xxxx
+    x.xx.o.............o.xx.x
+    ...x.o.............o.x.w.
+    .wwx.o.............o.x.w.
+    `;
+    runTest(stonestr,"/python/expected_test_output/test_7pteyes_2.txt");
+
+    stonestr = `
+    ...x.o.............o.x.w.
+    ww.x.o.............o.x.ww
+    ..xx.o.............o.xx..
+    xxxx.o.............o.xxxx
+    oooooo.............oooooo
+    xxxx.o.............o.xxxx
+    ..xx.o.............o.xx..
+    .w.x.o.............o.x.w.
+    ww.x.o.............o.x..w
+    `;
+    runTest(stonestr,"/python/expected_test_output/test_8pteyes.txt");
 
     stonestr = `
     oxox.oxw.boxo
@@ -1013,10 +1051,10 @@ function runAllTests() {
     runTest(stonestr,"/python/expected_test_output/test_various_eyefillings.txt");
 
     stonestr = `
-    ..xxox.xobbb.oxxw.
-    wwwxox.xobboooxw.w
+    ..xx.o.xobbb.oxxw.
+    wwwxooxxobboooxw.w
     ww.xox.xooooo.xwwx
-    xxxxox.xxo...xx.xx
+    xxxxoxx.xo...xx.xx
     ooooooxxxoxxxxxxxo
     xxxxxo..xxoooooooo
     xww.xooooooxxxxxxx
@@ -1025,10 +1063,36 @@ function runAllTests() {
     runTest(stonestr,"/python/expected_test_output/test_various_eyefillings2.txt");
 
     stonestr = `
-    wwxxox.xobbb.oxxw.
-    wwwxox.xobbbooxwww
+    .wxx.o.xob.b.oxxw.
+    w.wxooxxobboooxw.w
     ww.xox.xooooo.xwwx
-    xxxxox.xxo...xx.xx
+    xxxxoxx.xo..xxxxxx
+    ooooooxxxoxxxooooo
+    xxxxxo..xxooooxxxx
+    xwxxxooooooxxxxxww
+    w.wxx..o.o.oo.xwww
+    .wwxx.........xxw.
+    `;
+    runTest(stonestr,"/python/expected_test_output/test_various_eyefillings2b.txt");
+
+    stonestr = `
+    .wxx.o.xob.b.oxxww
+    w.wxooxxo.boooxwww
+    ...xox.xooooo.xww.
+    xxxxoxx.xo..xxxxxx
+    ooooooxxxoxxxooooo
+    xxxxxo..xxooooxxxx
+    .wxxxooooooxxxx.ww
+    w.wxx..o.o.oo.xwww
+    .w.xx.........xxw.
+    `;
+    runTest(stonestr,"/python/expected_test_output/test_various_eyefillings2c.txt");
+
+    stonestr = `
+    wwxx.o.xobbb.oxxw.
+    wwwxooxxobbbooxwww
+    ww.xox.xooooo.xwwx
+    xxxxoxx.xo...xx.xx
     ooooooxxxoxxxxxxxo
     xxxxxo..xxoooooooo
     xww.xooooooxxxxxxx

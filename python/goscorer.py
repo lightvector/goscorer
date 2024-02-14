@@ -1033,6 +1033,14 @@ def is_pseudolegal(
                 return True
     return False
 
+def count_adjacents_in(y: int, x: int, points: Set[Tuple[int,int]]) -> int:
+    count = 0
+    adjacents = [(y-1,x),(y+1,x),(y,x-1),(y,x+1)]
+    for a in adjacents:
+        if a in points:
+            count += 1
+    return count
+
 @dataclass
 class EyePointInfo:
     adj_points: List[Tuple[int,int]]
@@ -1200,7 +1208,7 @@ def mark_eye_values(
             eye_value = max(eye_value, 2)
 
 
-        # General for all eyes - assume 2 eye value if there are two adjacent degree >= 3 points at least one of which is empty
+        # General for all eyes - assume 2 eye value if there are two adjacent degree >= 3 points at least one of which is playable
         # and not on the border and the other is empty or has an empty eye neighbor besides the first.
         # And it splits the space into at least two pieces for which each piece has a point with num_moves_to_block == 0 and
         # at least one piece has two such points and at least two such pieces if the other point was not also empty.
@@ -1210,6 +1218,8 @@ def mark_eye_values(
                 if stones[dy][dx] != EMPTY:
                     continue
                 if is_on_border(dy,dx,ysize,xsize):
+                    continue
+                if not is_pseudolegal(ysize,xsize,stones,chain_ids,chain_infos_by_id,dy,dx,pla):
                     continue
 
                 info1 = info_by_point[point_to_delete]
@@ -1255,6 +1265,61 @@ def mark_eye_values(
 
                 if eye_value >= 2:
                     break
+
+        # General for all eyes - handle the case when the eye has no splittable points due to dead opponent stones
+        # but the dead opponent stones themselves would capture into a living shape
+        # Count how many pieces there are and how many bottleneck points there are that increase the number of pieces.
+        if eye_value < 2:
+            dead_opps_in_eye = set()
+            unplayable_in_eye = []
+            for point in eye_info.real_points:
+                (dy,dx) = point
+                if stones[dy][dx] == opp and marked_dead[dy][dx]:
+                    dead_opps_in_eye.add(point)
+                # Also count any spot that is un-playable
+                elif not is_pseudolegal(ysize,xsize,stones,chain_ids,chain_infos_by_id,dy,dx,pla):
+                    unplayable_in_eye.append(point)
+
+            if len(dead_opps_in_eye) > 0:
+                # Penalize for each opponent dead stone lodged in a false eye point
+                num_throwins = 0
+                for (y,x) in eye_info.potential_points:
+                    if stones[y][x] == opp and is_false_eye_point[y][x]:
+                        num_throwins += 1
+
+                # Opponent can choose to omit any single unplayable spot, or none, the rest are treated as
+                # part of the eye.
+                possible_omissions = unplayable_in_eye.copy()
+                possible_omissions.append(None)
+
+                all_good_for_defender = True
+                for omitted in possible_omissions:
+                    remaining_shape = dead_opps_in_eye.copy()
+                    for point in unplayable_in_eye:
+                        if point != omitted:
+                            remaining_shape.add(point)
+
+                    initial_piece_count = len(get_pieces(ysize,xsize,remaining_shape,set()))
+                    num_bottlenecks = 0
+                    num_non_bottlenecks_high_degree = 0
+                    for point_to_delete in remaining_shape:
+                        (dy,dx) = point_to_delete
+                        if len(get_pieces(ysize,xsize,remaining_shape,set([point_to_delete]))) > initial_piece_count:
+                            num_bottlenecks += 1
+                        elif count_adjacents_in(dy,dx,remaining_shape) >= 3:
+                            num_non_bottlenecks_high_degree += 1
+
+                    # 7 point eye is always good for defender unless there are weaknesses
+                    bonus = 0
+                    if len(remaining_shape) >= 7:
+                        bonus = 1
+
+                    if initial_piece_count - num_throwins + (num_bottlenecks + num_non_bottlenecks_high_degree + bonus) // 2 < 2:
+                        # print(f"{remaining_shape=}, {initial_piece_count=}, {num_throwins=}, {num_bottlenecks=}, {num_non_bottlenecks_high_degree=}")
+                        all_good_for_defender = False
+                        break
+                if all_good_for_defender:
+                    eye_value = 2
 
         eye_value = min(eye_value, 2)
         eye_info.eye_value = eye_value

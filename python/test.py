@@ -733,6 +733,48 @@ def test_solid_eyeshapes_nakade2():
     """
     run_snapshot_test(inspect.currentframe().f_code.co_name, stonestr)
 
+def test_7pteyes():
+    stonestr = """
+    ..xx.o.............o.xx..
+    ...x.o.............o.x.w.
+    x..x.o.............o.x..x
+    xxxx.o.............o.xxxx
+    oooooo.............oooooo
+    xxxx.o.............o.xxxx
+    x.wx.o.............o.x..x
+    .w.x.o.............o.x.ww
+    ..xx.o.............o.xx..
+    """
+    run_snapshot_test(inspect.currentframe().f_code.co_name, stonestr)
+
+def test_7pteyes_2():
+    stonestr = """
+    ...x.o.............o.x...
+    ...x.o.............o.x.w.
+    x.xx.o.............o.xx.x
+    xxxx.o.............o.xxxx
+    oooooo.............oooooo
+    xxxx.o.............o.xxxx
+    x.xx.o.............o.xx.x
+    ...x.o.............o.x.w.
+    .wwx.o.............o.x.w.
+    """
+    run_snapshot_test(inspect.currentframe().f_code.co_name, stonestr)
+
+def test_8pteyes():
+    stonestr = """
+    ...x.o.............o.x.w.
+    ww.x.o.............o.x.ww
+    ..xx.o.............o.xx..
+    xxxx.o.............o.xxxx
+    oooooo.............oooooo
+    xxxx.o.............o.xxxx
+    ..xx.o.............o.xx..
+    .w.x.o.............o.x.w.
+    ww.x.o.............o.x..w
+    """
+    run_snapshot_test(inspect.currentframe().f_code.co_name, stonestr)
+
 def test_bamboo_reachable_seki():
     stonestr = """
     ...xxxxxoooooo...
@@ -1022,10 +1064,10 @@ def test_various_eyefillings():
 
 def test_various_eyefillings2():
     stonestr = """
-    ..xxox.xobbb.oxxw.
-    wwwxox.xobboooxw.w
+    ..xx.o.xobbb.oxxw.
+    wwwxooxxobboooxw.w
     ww.xox.xooooo.xwwx
-    xxxxox.xxo...xx.xx
+    xxxxoxx.xo...xx.xx
     ooooooxxxoxxxxxxxo
     xxxxxo..xxoooooooo
     xww.xooooooxxxxxxx
@@ -1033,12 +1075,42 @@ def test_various_eyefillings2():
     """
     run_snapshot_test(inspect.currentframe().f_code.co_name, stonestr)
 
+
+def test_various_eyefillings2b():
+    stonestr = """
+    .wxx.o.xob.b.oxxw.
+    w.wxooxxobboooxw.w
+    ww.xox.xooooo.xwwx
+    xxxxoxx.xo..xxxxxx
+    ooooooxxxoxxxooooo
+    xxxxxo..xxooooxxxx
+    xwxxxooooooxxxxxww
+    w.wxx..o.o.oo.xwww
+    .wwxx.........xxw.
+    """
+    run_snapshot_test(inspect.currentframe().f_code.co_name, stonestr)
+
+
+def test_various_eyefillings2c():
+    stonestr = """
+    .wxx.o.xob.b.oxxww
+    w.wxooxxo.boooxwww
+    ...xox.xooooo.xww.
+    xxxxoxx.xo..xxxxxx
+    ooooooxxxoxxxooooo
+    xxxxxo..xxooooxxxx
+    .wxxxooooooxxxx.ww
+    w.wxx..o.o.oo.xwww
+    .w.xx.........xxw.
+    """
+    run_snapshot_test(inspect.currentframe().f_code.co_name, stonestr)
+
 def test_various_eyefillings3():
     stonestr = """
-    wwxxox.xobbb.oxxw.
-    wwwxox.xobbbooxwww
+    wwxx.o.xobbb.oxxw.
+    wwwxooxxobbbooxwww
     ww.xox.xooooo.xwwx
-    xxxxox.xxo...xx.xx
+    xxxxoxx.xo...xx.xx
     ooooooxxxoxxxxxxxo
     xxxxxo..xxoooooooo
     xww.xooooooxxxxxxx

@@ -1040,6 +1040,16 @@ function isPseudoLegal(ysize, xsize, stones, chainIds, chainInfosById, y, x, pla
     return false;
 }
 
+function countAdjacentsIn(y, x, points) {
+    let count = 0;
+    const adjacents = [[y-1, x], [y+1, x], [y, x-1], [y, x+1]];
+    for(let a of adjacents) {
+        if(points.has(a))
+            count += 1;
+    }
+    return count;
+}
+
 class EyePointInfo {
     constructor(
         adjPoints,
@@ -1223,6 +1233,8 @@ function markEyeValues(
                     continue;
                 if(isOnBorder(dy, dx, ysize, xsize))
                     continue;
+                if(!isPseudoLegal(ysize, xsize, stones, chainIds, chainInfosById, dy, dx, pla))
+                    continue;
 
                 const info1 = infoByPoint[[dy, dx]];
                 if(info1.numMovesToBlock > 1 || info1.adjEyePoints.length < 3)
@@ -1273,6 +1285,59 @@ function markEyeValues(
 
                 if(eyeValue >= 2)
                     break;
+            }
+        }
+
+        if(eyeValue < 2) {
+            const deadOppsInEye = new CoordinateSet();
+            const unplayableInEye = [];
+            for(let point of eyeInfo.realPoints) {
+                const [dy, dx] = point;
+                if(stones[dy][dx] === opp && markedDead[dy][dx])
+                    deadOppsInEye.add(point);
+                else if(!isPseudoLegal(ysize, xsize, stones, chainIds, chainInfosById, dy, dx, pla))
+                    unplayableInEye.push(point);
+            }
+
+            if(deadOppsInEye.size > 0) {
+                let numThrowins = 0;
+                for(let [y,x] of eyeInfo.potentialPoints) {
+                    if(stones[y][x] === opp && isFalseEyePoint[y][x])
+                        numThrowins += 1;
+                }
+
+                const possibleOmissions = [...unplayableInEye];
+                possibleOmissions.push(null);
+                let allGoodForDefender = true;
+                for(let omitted of possibleOmissions) {
+                    const remainingShape = deadOppsInEye.copy();
+                    for(let point of unplayableInEye) {
+                        if(point !== omitted)
+                            remainingShape.add(point);
+                    }
+
+                    const initialPieceCount = getPieces(ysize, xsize, remainingShape, new CoordinateSet()).length;
+                    let numBottlenecks = 0;
+                    let numNonBottlenecksHighDegree = 0;
+                    for(let pointToDelete of remainingShape) {
+                        const [dy,dx] = pointToDelete;
+                        if(getPieces(ysize, xsize, remainingShape, new CoordinateSet([pointToDelete])).length > initialPieceCount)
+                            numBottlenecks += 1;
+                        else if(countAdjacentsIn(dy,dx,remainingShape) >= 3)
+                            numNonBottlenecksHighDegree += 1;
+                    }
+
+                    let bonus = 0;
+                    if(remainingShape.size >= 7)
+                        bonus += 1;
+
+                    if(initialPieceCount - numThrowins + Math.floor((numBottlenecks + numNonBottlenecksHighDegree + bonus) / 2) < 2) {
+                        allGoodForDefender = false;
+                        break;
+                    }
+                }
+                if(allGoodForDefender)
+                    eyeValue = 2;
             }
         }
 
@@ -1400,6 +1465,13 @@ class CoordinateSet {
                 callback([y, x]);
             }
         }
+    }
+
+    copy() {
+        const ret = new CoordinateSet();
+        ret.map = new Map(this.map);
+        ret.size = this.size;
+        return ret;
     }
 
     [Symbol.iterator]() {

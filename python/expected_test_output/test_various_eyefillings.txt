@@ -15,7 +15,7 @@ ooooxx.x...ooooooo
 xxxxo.............
 .w.xo.....oooooooo
 xxxxo.....oxxxxxxx
-ooooo.....ox.wwww.
+ooooo.....oxzzzzzz
 SEKI:
 aoo........oxzxxxz
 ooo........oxxxxxx
@@ -23,8 +23,8 @@ oooo.......ooooooo
 ...xo.............
 xxxxo.............
 zxzxo.....oooooooo
-xxxxo.....oxxxxxxx
-ooooo.....oxzxxxxz
+xxxxo.....o.......
+ooooo.....o.......
 FALSE EYES:
 .box...x...ox.www.
 bboxx.x.x..oxxxxxx
@@ -60,4 +60,4 @@ ooooxx.x...ooooooo
 xxxxo.............
 111xo.....oooooooo
 xxxxo.....oxxxxxxx
-ooooo.....ox111111
+ooooo.....ox222222

@@ -6,13 +6,13 @@ xxxxoo.oox.w.xxo....ooxxxx
 TERRITORY:
 xooooaaaooxxxxooaaaaaooooo
 xxxxooaooxzzzxxoaaaaooxxxx
-.w.xxoaoxxzzzzxxooaaoxx.w.
-..w.xoaoxxxxxxx..oaaoxx...
+zzzxxoaoxxzzzzxxooaaoxx.w.
+zzzzxoaoxxxxxxx..oaaoxx...
 SEKI:
-x.........................
-xxxx..................xxxx
-zxzxx................xxzxz
-zzxzx................xxzzz
+..........................
+......................xxxx
+.....................xxzxz
+.....................xxzzz
 FALSE EYES:
 xoooo...ooxxxxoo.....ooooo
 xxxxoo.oox.w.xxo....ooxxxx
@@ -31,5 +31,5 @@ xxxxoo.oox.w.xxo....ooxxxx
 EYEVALUE:
 xoooo222ooxxxxoo22222ooooo
 xxxxoo2oox222xxo2222ooxxxx
-111xxo2oxx2222xxoo22oxx111
-1111xo2oxxxxxxx..o22oxx111
+222xxo2oxx2222xxoo22oxx111
+2222xo2oxxxxxxx..o22oxx111
