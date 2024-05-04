@@ -1,6 +1,4 @@
 ## goscorer
-**Testing in progress, this code is new and might not be stable yet!**
-
 Territory scoring in Go with automated seki detection is very challenging. The intent for this library is provide an open-source implementation that can correctly score almost any end-of-game position under Japanese-like rules that territory is not counted for groups alive in seki, if dead stones are correctly marked and enough of the eventually-necessary protective moves are made. It may not always be correct in sufficiently exotic positions, but positions not correctable with further play should be rare.
 
 In practice, this implementation does NOT require players to fill all the dame. By default it will automatically exclude counting obvious false eye shapes that must eventually be filled, although this can be configured. Of course, this will not catch all necessary internal protections. Players still need to play enough of the dame to force internal protections that aren't simply false eye shapes.
@@ -12,6 +10,7 @@ In practice, this implementation does NOT require players to fill all the dame. 
 
 There is both a Python implementation and a Javascript implementation that implement exactly the same algorithm and heuristics. The Python implementation is well-commented with verbose docstrings on the `LocScore` object and the primary `territory_scoring` function. The Javascript implementation is a port of the Python implementation, so for more detailed documentation, see the Python code rather than the Javascript code. For completeness, an area scoring implementation is also provided alongside the territory scoring implementation.
 
+If you find any bugs or anomalies in the scoring, please let me know!
 
 The relevant code in this repo is released under a MIT license, see LICENSE.txt for details.
 
