@@ -197,7 +197,7 @@ function territoryScoring(
 /**
  * @param {color[][]} stones - BLACK or WHITE or EMPTY indicating the stones on the board.
  * @param {bool[][]} markedDead - true if the location has a stone marked as dead, and false otherwise.
- * @return {LocScore[][]}
+ * @return {color[][]}
  */
 function areaScoring(
     stones,
