@@ -1158,3 +1158,86 @@ def test_various_corner_eyes():
     run_snapshot_test(inspect.currentframe().f_code.co_name, stonestr)
 
 
+def test_narrow_board1():
+    stonestr = """
+    .x.x.o.
+    """
+    run_snapshot_test(inspect.currentframe().f_code.co_name, stonestr)
+def test_narrow_board2():
+    stonestr = """
+    .x.o.b
+    """
+    run_snapshot_test(inspect.currentframe().f_code.co_name, stonestr)
+def test_narrow_board3():
+    stonestr = """
+    .x.
+    """
+    run_snapshot_test(inspect.currentframe().f_code.co_name, stonestr)
+def test_narrow_board4():
+    stonestr = """
+    .x.x.xx.x.o.o.
+    """
+    run_snapshot_test(inspect.currentframe().f_code.co_name, stonestr)
+def test_narrow_board5():
+    stonestr = """
+    .x.o
+    """
+    run_snapshot_test(inspect.currentframe().f_code.co_name, stonestr)
+def test_narrow_board6():
+    stonestr = """
+    .x.w
+    """
+    run_snapshot_test(inspect.currentframe().f_code.co_name, stonestr)
+def test_narrow_board7():
+    stonestr = """
+    x.w.
+    """
+    run_snapshot_test(inspect.currentframe().f_code.co_name, stonestr)
+def test_narrow_board8():
+    stonestr = """
+    .
+    o
+    .
+    """
+    run_snapshot_test(inspect.currentframe().f_code.co_name, stonestr)
+def test_narrow_board9():
+    stonestr = """
+    x
+    .
+    o
+    .
+    b
+    """
+    run_snapshot_test(inspect.currentframe().f_code.co_name, stonestr)
+def test_narrow_board10():
+    stonestr = """
+    b
+    .
+    o
+    .
+    b
+    """
+    run_snapshot_test(inspect.currentframe().f_code.co_name, stonestr)
+
+def test_narrow_board11():
+    stonestr = """
+    .o
+    o.
+    xo
+    x.
+    .x
+    ox
+    """
+    run_snapshot_test(inspect.currentframe().f_code.co_name, stonestr)
+
+def test_narrow_board12():
+    stonestr = """
+    .o
+    o.
+    xo
+    x.
+    .x
+    wx
+    """
+    run_snapshot_test(inspect.currentframe().f_code.co_name, stonestr)
+

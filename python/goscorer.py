@@ -454,6 +454,8 @@ def mark_connection_blocks(
                         ty,tx = get_target_yx(pylen-1,pxlen-1)
                         if not is_on_board(ty,tx,ysize,xsize):
                             continue
+                        if not is_on_board(y,x,ysize,xsize):
+                            continue
 
                         atloc = None
                         mismatch = False

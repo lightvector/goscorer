@@ -1,0 +1,14 @@
+BOARD:
+.x.w
+TERRITORY:
+zxzz
+SEKI:
+....
+FALSE EYES:
+.xFw
+UNSCORABLE FALSE EYES:
+.x.w
+DAME:
+.x.w
+EYEVALUE:
+1x11

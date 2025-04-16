@@ -398,6 +398,8 @@ function markConnectionBlocks(
                         let [ty, tx] = getTargetYX(pylen-1, pxlen-1);
                         if(!isOnBoard(ty, tx, ysize, xsize))
                             continue;
+                        if(!isOnBoard(y, x, ysize, xsize))
+                            continue;
 
                         let atLoc;
                         let mismatch = false;

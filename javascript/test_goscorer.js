@@ -1136,6 +1136,85 @@ function runAllTests() {
     `;
     runTest(stonestr,"/python/expected_test_output/test_various_corner_eyes.txt");
 
+    stonestr = `
+    .x.x.o.
+    `;
+    runTest(stonestr,"/python/expected_test_output/test_narrow_board1.txt");
+
+    stonestr = `
+    .x.o.b
+    `;
+    runTest(stonestr,"/python/expected_test_output/test_narrow_board2.txt");
+
+    stonestr = `
+    .x.
+    `;
+    runTest(stonestr,"/python/expected_test_output/test_narrow_board3.txt");
+
+    stonestr = `
+    .x.x.xx.x.o.o.
+    `;
+    runTest(stonestr,"/python/expected_test_output/test_narrow_board4.txt");
+
+    stonestr = `
+    .x.o
+    `;
+    runTest(stonestr,"/python/expected_test_output/test_narrow_board5.txt");
+
+    stonestr = `
+    .x.w
+    `;
+    runTest(stonestr,"/python/expected_test_output/test_narrow_board6.txt");
+
+    stonestr = `
+    x.w.
+    `;
+    runTest(stonestr,"/python/expected_test_output/test_narrow_board7.txt");
+
+    stonestr = `
+    .
+    o
+    .
+    `;
+    runTest(stonestr,"/python/expected_test_output/test_narrow_board8.txt");
+
+    stonestr = `
+    x
+    .
+    o
+    .
+    b
+    `;
+    runTest(stonestr,"/python/expected_test_output/test_narrow_board9.txt");
+
+    stonestr = `
+    b
+    .
+    o
+    .
+    b
+    `;
+    runTest(stonestr,"/python/expected_test_output/test_narrow_board10.txt");
+
+    stonestr = `
+    .o
+    o.
+    xo
+    x.
+    .x
+    ox
+    `;
+    runTest(stonestr,"/python/expected_test_output/test_narrow_board11.txt");
+
+    stonestr = `
+    .o
+    o.
+    xo
+    x.
+    .x
+    wx
+    `;
+    runTest(stonestr,"/python/expected_test_output/test_narrow_board12.txt");
 
 }
 
