@@ -870,6 +870,10 @@ function markFalseEyePoints(
             const neighborsFromEyePoints = origEyeInfo.macrochainNeighborsFrom[origMacrochainId];
 
             for(let [ey, ex] of neighborsFromEyePoints) {
+                // Skip points already marked false.
+                if(isFalseEyePoint[ey][ex])
+                    continue;
+
                 let sameEyeAdjCount = 0;
                 for(let [y, x] of [[ey-1,ex], [ey+1,ex], [ey,ex-1], [ey,ex+1]]) {
                     if(origEyeInfo.potentialPoints.has([y, x]))

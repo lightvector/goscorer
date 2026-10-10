@@ -870,6 +870,10 @@ def mark_false_eye_points(
         for orig_macrochain_id, neighbors_from_eye_points in orig_eye_info.macrochain_neighbors_from.items():
             # Check each point to see if it's going to be false
             for ey,ex in neighbors_from_eye_points:
+                # Skip points already marked false.
+                if is_false_eye_point[ey][ex]:
+                    continue
+
                 # Cannot be a false eye point if it is adjacent to more than one other point within the eye.
                 same_eye_adj_count = sum(1 for point in [(ey-1,ex),(ey+1,ex),(ey,ex-1),(ey,ex+1)] if point in orig_eye_info.potential_points)
                 if same_eye_adj_count > 1:
